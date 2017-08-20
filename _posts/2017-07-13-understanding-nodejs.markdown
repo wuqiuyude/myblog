@@ -2,7 +2,7 @@
 layout:     post
 title:      "深入理解node.js"
 subtitle:   "understanding node.js"
-date:       2017-07-12 19:00:00
+date:       2017-07-13 19:00:00
 author:     "wuqiuyu"
 header-img: "img/in-post/blog_node.jpg"
 header-mask: 0.3
