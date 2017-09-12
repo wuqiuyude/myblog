@@ -10,6 +10,7 @@ catalog:    true
 tags:
     - chromeExtention
     - js
+    - 原创
 ---
 
 

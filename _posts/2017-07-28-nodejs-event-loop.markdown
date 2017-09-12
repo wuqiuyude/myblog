@@ -10,6 +10,7 @@ catalog:    true
 tags:
     - Node.js
     - js
+    - 翻译
 ---
 
 > 第二篇译文，学习一下node.js的核心，事件轮询机制。这篇文章的作者是mixu，原文地址[Understanding the node.js event loop](http://blog.mixu.net/2011/02/01/understanding-the-node-js-event-loop/)。事件轮询机制是js的核心，也是node.js能够实现异步操作的核心，正确的理解事件轮询机制，有助于更好的掌握node.js<br><br>
