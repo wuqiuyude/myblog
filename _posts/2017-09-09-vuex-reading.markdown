@@ -528,8 +528,8 @@ module.forEachChild((child, key) => {
   installModule(store, rootState, path.concat(key), child, hot)
 })
 ```
-未完待续。。。
-[1]参考[Vuex框架原理与源码分析](http://geek.csdn.net/news/detail/196495?locationNum=12&fps=1)
-[2]参考[Vuex文档](https://vuex.vuejs.org/zh-cn/api.html1)
-[3]参考[Vuex 源码解析（如何阅读源代码实践篇）](http://www.jianshu.com/p/8273b19c9d74)
+未完待续。。。<br>
+[1]参考[Vuex框架原理与源码分析](http://geek.csdn.net/news/detail/196495?locationNum=12&fps=1)<br>
+[2]参考[Vuex文档](https://vuex.vuejs.org/zh-cn/api.html1)<br>
+[3]参考[Vuex 源码解析（如何阅读源代码实践篇）](http://www.jianshu.com/p/8273b19c9d74)<br>
 [4]参考[ Vuex 2.0 源码分析](http://blog.csdn.net/sinat_17775997/article/details/62231288)
