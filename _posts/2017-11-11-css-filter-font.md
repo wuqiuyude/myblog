@@ -18,8 +18,6 @@ tags:
 &emsp;&emsp;拿到这个题目的第一反应当然是先去google一下“如果用css实现渐变字体”，找了半天，然而并没有找到合适的解决方案😭。
 于是想了想是不是思路有问题了😖。<br>
 &emsp;&emsp;这个时候正好看到了设计稿上的渐变背景，于是想到既然字体不能渐变，我可以让背景渐变，然后文字作为蒙板遮罩在上面不久行了吗？嗯，为自己的机智打电话。<br>
-&emsp;&emsp;设计给的图是这样子的：<br>
-![图片](/img/in-post/vuex.png)
 &emsp;&emsp;首先给设计一下html，很简单：
 ```html
 <div class="mark">
@@ -45,6 +43,7 @@ css:
 接下来就是实现遮罩效果了，查了一下css3有一个属性background-clip，可以规定背景的绘制区域，<br>其中有一个值text，可以规定背景绘制区域为文字，这个时候只要设置字体颜色为透明，就会只显示相应的背景啦。<br>可以使用text-fill-color设置字体颜色。让我们在查一查这两个属性：
 ![图片](/img/in-post/css-text-clip.png)
 ![图片](/img/in-post/text-fill-color.png)
+果然还是可恶的IE。不过没事，我们的效果基本实现了，css如下：
 ``` css
 .mark {
     font-family: arial, helvetica;
@@ -63,3 +62,6 @@ css:
     font-weight: bold;
   }
 ```
+最后的效果如图：
+![图片](/img/in-post/bg-grandient.png)
+虽然是一个小功能，不过也算是掌握一点新技能。
