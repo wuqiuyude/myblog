@@ -8,7 +8,7 @@ header-img: "img/in-post/snow.jpg"
 header-mask: 0.3
 catalog:    true
 tags:
-    - javasctipt
+    - javascript
     - 作用域
 ---
 > 《你不知道的javascript》读书笔记第一篇，谈一谈老生常谈的作用域问题
