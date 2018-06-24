@@ -1,4 +1,3 @@
-
 ---
 layout:     post
 title:      "再次谈一谈this, 对象和类"
