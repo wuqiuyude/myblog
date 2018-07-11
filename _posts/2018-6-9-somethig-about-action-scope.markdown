@@ -10,6 +10,7 @@ catalog:    true
 tags:
     - javascript
     - 作用域
+    - 你不知道的javascript
 ---
 > 《你不知道的javascript》读书笔记第一篇，谈一谈老生常谈的作用域问题
 
