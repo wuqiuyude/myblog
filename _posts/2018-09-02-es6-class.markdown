@@ -1,0 +1,251 @@
+__---__
+layout:     post
+title:      "深入理解es6的Class"
+subtitle:   "A Deep Dive into es6 Class"
+date:       2018-09-02 19:00:00
+author:     "wuqiuyu"
+header-img: "img/in-post/blog_node.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - ES6
+    - Class
+---
+
+
+>我们都知道javascript是面向对象的编程语言，javascript中没有类，但是有很多种模仿类的方式，例如使用原型链、组合继承等方式实现类。ES6给我们提供了新的语法——Class，然后ES6中引入的 JavaScript 类实质上是 JavaScript 现有的基于原型的继承的语法糖。类语法不会为JavaScript引入新的面向对象的继承模型。今天的这篇文章主要就会为了讲一讲ES6的类和之前我们使用原型模拟的类的关系。<br>
+
+&emsp;&emsp;Javacript中并没有类的机制，所有对于类的实现其实都是对于类的模仿，这相对于那些面向对象的语言，例如Java、python等语言中的类有本质上的区别。传统的面相对象语言的类，我们声明一个实例的时候，实际上是将这个类中的对象和属性复制到了一个新的实体中，然而在Javascript中，并不会进行这个复制操作，所有的使用类声明的实例都会关联到同一个原型中。使用原型链实现类的方式，也是使用的最多的模拟类的方式。<br>
+&emsp;&emsp;ES6的中的Class本质上是语法糖，其内部的实现原理其实是基于原型继承的方式，这也是ES6之前，实现类的常用方式之一。<br>
+## 一、原型继承
+&emsp;&emsp;让我们首先来看看在ES6之前，使用原型的方式是如何实现类的呢？
+```javascript
+   function Person(name){
+　　　　this.name = name;
+　　}
+   Person.prototype.getName() {
+        return this.name
+   }
+　　var person1 = new Person('lucy');
+
+　　var person2 = new Person('lili');
+
+
+　　alert(person1.getName()); // lucy
+
+　　alert(person2.getName); // lili
+```
+## 二、ES6中的Class
+
+那么我们用ES6的Class重构这段代码是怎么样的呢：
+```javascript
+class Person {
+    constructor(name){
+        this._name = name
+    }
+    get name() {
+        return this._name
+    }
+    set name(name) {
+        this._name = name
+    }
+}
+var pseron1 = new Pseron('lucy');
+alert(pseron1.name) // lucy
+```
+ES6中声明类的方式和函数声明的方式很像，但是函数声明会被提升，但是类声明不会，此外，还可以用类表达试的方式声明类：
+```javascript
+/* 匿名类 */ 
+let Person = class {
+  constructor(name) {
+    this._name = name;
+  }
+  getName() {
+     return this._name;
+  }
+};
+/* 命名的类 */ 
+let Person = class Person {
+  constructor(name) {
+    this.name = name;
+  }
+};
+```
+&emsp;&emsp;类声明和类表达式的主体都执行在严格模式下。比如，构造函数，静态方法，原型方法，getter和setter都在严格模式下执行。<br>
+前面我们提到，ES6的class其实是原型继承的语法糖，让我们来证明一下：
+```javascript
+/* 匿名类 */ 
+
+```
+### constructor
+constructor方法是类的构造函数，在这里定义了一些私有属性，一个类只能拥有一个名为 “constructor”的特殊方法，如果类包含多个constructor的方法，则将抛出一个SyntaxError，实例化一个对象的时候，constructor方法会自动被调用，constructor方法如果没有显式定义，会隐式生成一个constructor方法。所以即使你没有添加构造函数，构造函数也是存在的。constructor的目的是为了保持所有的对象的属性是私有的，如果直接定义在原型链上，则无法保证属性是私有的。
+让我们把上面那段代码用Babel转码之后看看，会是什么样子的：
+```javascript
+"use strict";
+var _createClass = function () { 
+    function defineProperties(target, props) { 
+        for (var i = 0; i < props.length; i++) { 
+            var descriptor = props[i]; 
+            descriptor.enumerable = descriptor.enumerable || false; 
+            descriptor.configurable = true; 
+            if ("value" in descriptor) descriptor.writable = true; 
+            Object.defineProperty(target, descriptor.key, descriptor);
+        } 
+    }
+         
+    return function (Constructor, protoProps, staticProps) { 
+        if (protoProps) defineProperties(Constructor.prototype, protoProps); 
+        if (staticProps) defineProperties(Constructor, staticProps); 
+        return Constructor; 
+    }; 
+}();
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Person = function () {
+  function Person(name) {
+    _classCallCheck(this, Person);
+
+    this._name = name;
+  }
+
+  _createClass(Person, [{
+    key: "getName",
+    value: function getName() {
+      return this._name;
+    }
+  }]);
+
+  return Person;
+}();
+```
+可以看到，是在严格模式下写的代码。主要先看看_classCallCheck这个函数，它接受两个参数，一个是instance,一个Constructor。instance instanceof Constructor就是判断this的[[prototype]]是否指向Person.prototype, 也就是确保class是被作为构造函数调用的，而不是做完函数直接调用。<br>
+_createClass方法主要是使用Object.defineProperty的在Person.prototype上定义原型方法。看到这里基本可以可以非常明显的看到，Class就是用主要采用原型继承的方式实现的。
+### extends
+extends 关键字在类声明或类表达式中用于创建一个类作为另一个类的一个子类。如果子类中存在构造函数，则需要在使用“this”之前首先调用 super()。
+```javascript
+class Person {
+  constructor(name) {
+    this._name = name;
+  }
+  getName() {
+     return this._name;
+  }
+};
+class Student extends Person {
+    constructor(name, age){
+        super()
+        this._age = age
+    }
+}
+```
+再用Babel转一下，主要多了以下代码：
+```javascript
+function _possibleConstructorReturn(self, call) { 
+    if (!self) { 
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); 
+    } 
+    return call && (typeof call === "object" || typeof call === "function") ? call : self; 
+}
+
+function _inherits(subClass, superClass) { 
+    if (typeof superClass !== "function" && superClass !== null) { 
+        throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); 
+    } 
+    subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { 
+            value: subClass, 
+            enumerable: false, 
+            writable: true, 
+            configurable: true 
+        } 
+    }); 
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; 
+}
+var Student = function (_Person) {
+    _inherits(Student, _Person);
+
+    function Student(name, age) {
+        _classCallCheck(this, Student);
+
+        var _this = _possibleConstructorReturn(this, (Student.__proto__ || Object.getPrototypeOf(Student)).call(this));
+
+        _this._age = age;
+        return _this;
+    }
+
+    return Student;
+}(Person);
+```
+主要是调用_inherits实现继承的，让我们看看内部细节：
+```javascript
+    subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { 
+            value: subClass, 
+            enumerable: false, 
+            writable: true, 
+            configurable: true 
+        } 
+    }); 
+```
+这段代码的主要目的就是把使用Object.create，将superClass.prototype上原型方法，拷贝一份，然后附值给subClass.prototype，但是直接这样做会改变 subClass.prototype.constructor的指向，所以需要手动修改一下，这里把constructor配置为不可枚举的。
+```javascript
+   var _this = _possibleConstructorReturn(this, (Student.__proto__ || Object.getPrototypeOf(Student)).call(this));
+```
+然后是这段代码，很简单，就是super方法的写法。 super实现的原理 就是将继承的那个父类对象在子类中调用 比如 super.call(this) 实现将父类中的属性(父类的方法是通过原型链来继承，实例都可以共享这些方法)在子类中声明。
+## More than Sugar
+我们前面一直说ES6 class其实是语法糖，然而其实不仅仅是语法糖，他还有ES5无法实现的地方。
+### 静态属性会被继承
+在ES5中，我们无法真正的实现静态属性的继承，我们实现这种方式的方法只不过是通过拷贝完成的，但是在ES6的class中我们可以实现子类和父类的继承。
+```javascript
+// ES5
+function B() {}
+B.f = function () {};
+
+function D() {}
+D.prototype = Object.create(B.prototype);
+
+D.f(); // error
+// ES6
+class B {
+  static f() {}
+}
+
+class D extends B {}
+
+D.f(); // ok
+```
+### 内置函数的自带属性会被继承
+js的一些数据类型拥有一些特殊的内置属性，例如Array的length属性，length属性的值比数组的最大索引会大。如果我们直接使用原型链的方式实现继承是无法继承这些特殊类型的特殊属性的，但是es6的class确可以实现：
+```javascript
+// ES5
+function D() {
+  Array.apply(this, arguments);
+}
+D.prototype = Object.create(Array.prototype);
+
+var d = new D();
+d[0] = 42;
+
+d.length; // 0 - bad, no array exotic behavior
+```
+ES6类通过更改分配对象的时间和对象来解决此问题。 在ES5中，在调用子类构造函数之前分配了对象，子类将该对象传递给超类构造函数。 现在使用ES6类，在调用超类构造函数之前分配对象，并且超类使该对象可用于子类构造函数。 这使得Array即使在我们的子类上调用new时也会分配一个特殊的对象。
+```javascript
+// ES6
+class D extends Array {}
+
+let d = new D();
+d[0] = 42;
+
+d.length; // 1 - good, array exotic behavior
+```
+## 参考文档
+<a href="https://scotch.io/tutorials/better-javascript-with-es6-pt-ii-a-deep-dive-into-classes">better-javascript-with-es6-pt-ii-a-deep-dive-into-classes</a>
+<a href="https://www.sitepoint.com/object-oriented-javascript-deep-dive-es6-classes/
+">object-oriented-javascript-deep-dive-es6-classes/
+</a>
+<a href="https://scotch.io/tutorials/demystifying-es6-classes-and-prototypal-inheritance
+">demystifying-es6-classes-and-prototypal-inheritance
+</a>
+<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes#%E4%BD%BF%E7%94%A8_extends_%E5%88%9B%E5%BB%BA%E5%AD%90%E7%B1%BB">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes#%E4%BD%BF%E7%94%A8_extends_%E5%88%9B%E5%BB%BA%E5%AD%90%E7%B1%BB</a>
+<a href="https://segmentfault.com/a/1190000008390268
+">https://segmentfault.com/a/1190000008390268
+
+</a>
