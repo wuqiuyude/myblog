@@ -1,4 +1,4 @@
-__---__
+---
 layout:     post
 title:      "深入理解es6的Class"
 subtitle:   "A Deep Dive into es6 Class"
