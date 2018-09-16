@@ -2,7 +2,7 @@ __---__
 layout:     post
 title:      "深入理解es6的Class"
 subtitle:   "A Deep Dive into es6 Class"
-date:       2018-09-02 19:00:00
+date:       2018-09-15 19:00:00
 author:     "wuqiuyu"
 header-img: "img/in-post/blog_node.jpg"
 header-mask: 0.3
