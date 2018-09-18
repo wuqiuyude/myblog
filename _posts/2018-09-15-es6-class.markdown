@@ -63,6 +63,9 @@ let Person = class {
   getName() {
      return this._name;
   }
+  sayHello() {
+      console.log('hello')
+  }
 };
 /* 命名的类 */ 
 let Person = class Person {
@@ -74,9 +77,11 @@ let Person = class Person {
 &emsp;&emsp;类声明和类表达式的主体都执行在严格模式下。比如，构造函数，静态方法，原型方法，getter和setter都在严格模式下执行。<br>
 前面我们提到，ES6的class其实是原型继承的语法糖，让我们来证明一下：
 ```javascript
-/* 匿名类 */ 
-
+typeof Person // "function" 
+Person.prototype.sayHello() // 'hello'
+Person.prototype.constructor === Person //ture
 ```
+很显然，Person类其实是一个方法，并且有prototype属性，prototype.constructor指向自身，这和用原型链实现的继承，是一样的。
 ### constructor
 constructor方法是类的构造函数，在这里定义了一些私有属性，一个类只能拥有一个名为 “constructor”的特殊方法，如果类包含多个constructor的方法，则将抛出一个SyntaxError，实例化一个对象的时候，constructor方法会自动被调用，constructor方法如果没有显式定义，会隐式生成一个constructor方法。所以即使你没有添加构造函数，构造函数也是存在的。constructor的目的是为了保持所有的对象的属性是私有的，如果直接定义在原型链上，则无法保证属性是私有的。
 让我们把上面那段代码用Babel转码之后看看，会是什么样子的：
