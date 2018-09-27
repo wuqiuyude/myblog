@@ -15,7 +15,7 @@ tags:
 
 >我们都知道javascript是面向对象的编程语言，javascript中没有类，但是有很多种模仿类的方式，例如使用原型链、组合继承等方式实现类。ES6给我们提供了新的语法——Class，然后ES6中引入的 JavaScript 类实质上是 JavaScript 现有的基于原型的继承的语法糖。类语法不会为JavaScript引入新的面向对象的继承模型。今天的这篇文章主要就会为了讲一讲ES6的类和之前我们使用原型模拟的类的关系。<br>
 
-&emsp;&emsp;Javacript中并没有类的机制，所有对于类的实现其实都是对于类的模仿，这相对于那些面向对象的语言，例如Java、python等语言中的类有本质上的区别。传统的面相对象语言的类，我们声明一个实例的时候，实际上是将这个类中的对象和属性复制到了一个新的实体中，然而在Javascript中，并不会进行这个复制操作，所有的使用类声明的实例都会关联到同一个原型中。使用原型链实现类的方式，也是使用的最多的模拟类的方式。<br>
+&emsp;&emsp;Javacript中并没有类的机制，所有对于类的实现其实都是对于类的模仿，这相对于那些面向对象的语言，例如Java、python等语言中的类有本质上的区别。传统的面向对象语言中的类，我们声明一个实例的时候，实际上是将这个类中的对象和属性复制到了一个新的实体中，然而在Javascript中，并不会进行这个复制操作，所有的使用类声明的实例都会关联到同一个原型中。使用原型链实现类的方式，也是使用的最多的模拟类的方式。<br>
 &emsp;&emsp;ES6的中的Class本质上是语法糖，其内部的实现原理其实是基于原型继承的方式，这也是ES6之前，实现类的常用方式之一。<br>
 ## 一、原型继承
 &emsp;&emsp;让我们首先来看看在ES6之前，使用原型的方式是如何实现类的呢？
@@ -53,7 +53,7 @@ class Person {
 var pseron1 = new Pseron('lucy');
 alert(pseron1.name) // lucy
 ```
-ES6中声明类的方式和函数声明的方式很像，但是函数声明会被提升，但是类声明不会，此外，还可以用类表达试的方式声明类：
+ES6中声明类的方式和函数声明的方式很像，但是函数声明会被提升，但是类声明不会，此外，还可以用类表达式的方式声明类：
 ```javascript
 /* 匿名类 */ 
 let Person = class {
@@ -123,7 +123,7 @@ var Person = function () {
   return Person;
 }();
 ```
-可以看到，是在严格模式下写的代码。主要先看看_classCallCheck这个函数，它接受两个参数，一个是instance,一个Constructor。instance instanceof Constructor就是判断this的[[prototype]]是否指向Person.prototype, 也就是确保class是被作为构造函数调用的，而不是做完函数直接调用。<br>
+可以看到，是在严格模式下写的代码。主要先看看_classCallCheck这个函数，它接受两个参数，一个是instance,一个Constructor。instance instanceof Constructor就是判断this的[[prototype]]是否指向Person.prototype, 也就是确保class是被作为构造函数调用的，而不是做为函数直接调用。<br>
 _createClass方法主要是使用Object.defineProperty的在Person.prototype上定义原型方法。看到这里基本可以可以非常明显的看到，Class就是用主要采用原型继承的方式实现的。
 ### extends
 extends 关键字在类声明或类表达式中用于创建一个类作为另一个类的一个子类。如果子类中存在构造函数，则需要在使用“this”之前首先调用 super()。
