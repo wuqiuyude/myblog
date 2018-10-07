@@ -73,7 +73,7 @@ function bar(x) {
 console.log(bar(7));
 ```
 &emsp;&emsp;当调用bar时，创建了第一个帧 ，帧中包含了bar的参数和局部变量。当bar调用foo时，第二个帧就被创建，并被压到第一个帧之上，帧中包含了foo的参数和局部变量。当foo返回时，最上层的帧就被弹出栈（剩下bar函数的调用帧 ）。当bar返回的时候，栈就空了。
-![图片](../img/in-post/callStack.png)
+![图片](/img/in-post/callStack.png)
 #### 堆 heap
 &emsp;&emsp;对象被分配在一个堆中，即用以表示一个大部分非结构化的内存区域。也就是说所以的变量都存储在内存当中。
 #### 任务队列 queue
@@ -98,7 +98,7 @@ console.log('C');
 // A C B
 ```
 最后的打印结果是ACB，看一看浏览器在的调用顺序:
-![图片](../img/in-post/callstack1.png)
+![图片](/img/in-post/callstack1.png)
 &emsp;&emsp;浏览器先调用console.log('A')，打印出A，然后调用setTimeout,setTimeout是一个web api，它会被放web api进行处理，等时间到了就放入到任务队列当中。所以浏览器会先打印C，然后打印B。
 那么当我们把setTimeout的值设置为0的时候呢？你会发现其打印结果依然是ACB。
 #### setTimeout
@@ -111,7 +111,7 @@ console.log('C');
 浏览器执行一段js代码时，会有三种事件状态，分别是当前调用栈（宏任务）、任务队列（宏任务）、微任务队列。<br>
 &emsp;&emsp;宏任务按顺序执行，且浏览器在每个宏任务之间渲染页面。<br>
 &emsp;&emsp;所有微任务也按顺序执行，且在以下场景会立即执行所有微任务：1、每个回调之后且js执行栈中为空 2、每个宏任务结束后。
-![图片](../img/in-post/callstack2.png)
+![图片](/img/in-post/callstack2.png)
 
 ## 参考文档
 1、<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/window/setTimeout">https://developer.mozilla.org/zh-CN/docs/Web/API/window/setTimeout</a><br>
