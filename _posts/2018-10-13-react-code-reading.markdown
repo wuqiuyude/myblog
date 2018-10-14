@@ -183,7 +183,7 @@ static propTypes = {
 ```
 ## 四、React生命周期
 React的生命周期大致可以分为3个阶段，挂载阶段、渲染和卸载阶段。<br/>
-![图片](/img/in-post/react2.png)
+![图片](/img/in-post/react2.jpeg)
 ### 组件在挂载过程
 &emsp;&emsp;组件的挂载过程主要有两个生命周期函数：componentWillMount和componentDidMount，其中componentWillMount方法会在render方法之前执行，而componentDidMount会在render方法之后执行。如果我们在componentWillMount中执行setState方法，是没有意义的，组件会更新state，但是组件只会渲染一次。<br/>
 &emsp;&emsp;如果在componentDidMount阶段执行setState，组件会再次更新，但是在初始化的过程就更新了两遍组件，一般情况下是不提倡这么做的。
