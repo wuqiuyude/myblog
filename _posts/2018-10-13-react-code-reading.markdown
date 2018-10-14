@@ -4,7 +4,7 @@ title:      "深入React技术栈读书笔记（1）——react"
 subtitle:   "react code reading"
 date:       2018-10-13 19:00:00
 author:     "wuqiuyu"
-header-img: "img/in-post/5b8605d80001761108000450.jpg"
+header-img: "img/in-post/react4.jpg"
 header-mask: 0.3
 catalog:    true
 tags:
