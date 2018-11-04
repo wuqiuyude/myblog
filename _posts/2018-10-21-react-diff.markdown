@@ -32,7 +32,7 @@ diff算法有如下三个策略：
 ![图片](http://calendar.perfplanet.com/wp-content/uploads/2013/12/vjeux/1.png)
 <br>
 但是如果出现了DOM节点跨层级的移动操作呢？<br>
-![图片](./img/in-post/diff1.png)
+![图片](/img/in-post/diff1.png)
 <br>
 &emsp;&emsp;React会直接删除A节点然后重新创建A节点。此时的diff执行过程是：create A -> create B -> create C -> delete A。<br>
 出现跨层级移动时，并不会出现想象中的移动操作，而是以A为根节点的证个树被重新创建，这是一种影响React性能的操作，因此官方建议不要进行DOM节点跨层级的操作。（开发的时候应该保持稳定的DOM结构会有助于性能的提升，例如，可以通过CSS隐藏或显示节点，而不是真正的移除或者添加DOM节点）（v-if或者v-show）
