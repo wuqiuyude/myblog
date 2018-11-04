@@ -42,7 +42,7 @@ React是基于组件构建的应用，对于组件间的比较所采取的策略
 2、如果不是，则将该组件判断为dirty component，从而替换整个组件下的所有子节点。<br>
 3、对于同一类型的组件，有可能其virtual Dom没有任何变化，如果能够确切知道这点，那么就可以节省大量的diff运算时间。因此，React允许用户通过shouldComponentUpdate()来判断该组件是否需要进行diff算法分析<br>
 当组件D变为组件G时，即使这两个组件结构相似，一旦React判断D和G是不同的类型的组件，就不会比较两者的结构，而是直接删除组件D，重新创建组件G及其子节点。虽然当两个组件是不同类型但结构相似时，diff会影响性能，但正如React官方博客所言：不同类型的组件很少存在相似DOM树的情况，因此这种极端因素很难在实际开发中造成重大的影响。<br>
-![图片](./img/in-post/diff2.png)
+![图片](/img/in-post/diff2.png)
 ### element diff
 当节点处于同一层的时候，diff提供了三种节点操作<br>
 1、INSERT_MARKUP（插入）：新的组件类型不在旧集合中，即全新的节点，需要对新节点执行插入操作<br>
@@ -50,9 +50,12 @@ React是基于组件构建的应用，对于组件间的比较所采取的策略
 3、REMOVE_NODE: 旧组件类型，在新集合里也有，但对应的element不同则不能直接复用和更新，需要执行删除操作，或者就组件不在新集合中，也需要执行删除操作。<br>
 React提出优化策略：允许开发者对同一层级的同组子节点，添加唯一key进行区分。<br>
 结合源码来看一下diff算法是如果操作的：<br>
-首先对新集合中的节点进行循环遍历for（name in nextChildren）,通过唯一的key判断旧集合中是否存在相同节点，如果存在，会进行以为，但是这个时候不会马上进行移动位置，而是判断当前节点在旧集合中的位置与lastIndex进行比较（lastIndex: 访问过的节点在旧集合中的最右的位置（即最大的位置），初始化的值为0；
-_mountedIndex表示节点的位置。）， if(child._mountUndex < lastIndex_),否则不执行操作。这是一种顺序优化的手段。<br>
-![图片](./img/in-post/diff2.png)
+![图片](https://segmentfault.com/img/remote/1460000010686595)
+首先对新集合中的节点进行循环遍历for（name in nextChildren）,通过唯一的key判断旧集合中是否存在相同节点，如果存在，会进行以为，但是这个时候不会马上进行移动位置，而是判断当前节点在旧集合中的位置与lastIndex进行比较,if(child._mountUndex < lastIndex_),否则不执行操作。<br>
+这是一种顺序优化的手段.lastIndex一直在更新，表示访问过的节点在老集合中最右的位置（即最大的位置），如果新集合中当前访问的节点比lastIndex大，说明当前访问节点在老集合中就比上一个节点位置靠后，则该节点不会影响其他节点的位置，因此不用添加到差异队列中，即不执行移动操作，只有当访问的节点比lastIndex小时，才需要进行移动操作<br>
+![图片](https://segmentfault.com/img/remote/1460000010686596)
+这个for-in结束后，则是会把需要删除的节点用enqueue的方法继续入队unmount操作，这里this._unmountChild返回的是REMOVE_NODE对象，至此，整个更新的diff流程就走完了，而updates保存了全部的更新队列，最终由processQueue来挨个执行更新。
+![图片](/img/in-post/diff2.png)
 
 ## 总结
 通过diff策略，将算法从O(n^3)简化为O(n)<br>
