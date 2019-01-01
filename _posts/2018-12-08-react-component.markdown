@@ -18,20 +18,20 @@ tags:
 ## 事件系统
 &emsp;&emsp;React在virtual Dom上实现了一个 SyntheticEvent (合成事件)层，这是React实现的事件系统，他和原生的浏览器事件一样拥有同样的接口，同样支持事件的冒泡机制。
 ###合成事件的绑定方式
-&emsp;&emsp;React 事件的绑定方式在写法上与原生的 HTML 事件监听器属性很相似，并且含义和触发的 场景也全都是一致的：
+&emsp;&emsp;React 事件的绑定方式在写法上与原生的 HTML 事件监听器属性很相似，并且含义和触发的 场景也全都是一致的：</br>
 ```html
 <button onClick={this.handleClick}>Test</button>
 ```
-但是react的事件绑定和Dom0级别的事件绑定还是有一些区别的：
-&emsp;&emsp;（1）：react事件必须用驼峰发来书写
- &emsp;&emsp;（2）：React 并不会像 DOM0 级事件那样将事件处理器直接绑定到 HTML 元素之上。React 仅仅是 借鉴了这种写法而已。
+但是react的事件绑定和Dom0级别的事件绑定还是有一些区别的：</br>
+&emsp;&emsp;（1）：react事件必须用驼峰发来书写</br>
+ &emsp;&emsp;（2）：React 并不会像 DOM0 级事件那样将事件处理器直接绑定到 HTML 元素之上。React 仅仅是 借鉴了这种写法而已。</br>
 ###合成事件的实现机制
-&emsp;&emsp;在React底层，主要对合成事件做了两件事:事件委派和自动绑定。
-&emsp;&emsp;&emsp;&emsp;1. 事件委派：
-&emsp;&emsp;&emsp;&emsp;它并不会把事件处理函数直接绑定到 真实的节点上，而是把所有事件绑定到结构的最外层，使用一个统一的事件监听器，这个事件监 听器上维持了一个映射来保存所有组件内部的事件监听和处理函数。当组件挂载或卸载时，只是 在这个统一的事件监听器上插入或删除一些对象;当事件发生时，首先被这个统一的事件监听器 处理，然后在映射里找到真正的事件处理函数并调用。这样做简化了事件处理和回收机制，效率 也有很大提升。
-&emsp;&emsp;&emsp;&emsp;2. 自动绑定
-&emsp;&emsp;&emsp;&emsp;在 React 组件中，每个方法的上下文都会指向该组件的实例，即自动绑定 this 为当前组件。 而且 React 还会对这种引用进行缓存，以达到 CPU 和内存的最优化。在使用 ES6 classes 或者纯 函数时，这种自动绑定就不复存在了，我们需要手动实现 this 的绑定。</br>
-&emsp;&emsp;几种绑定this的方法:
+&emsp;&emsp;在React底层，主要对合成事件做了两件事:事件委派和自动绑定。</br>
+&emsp;&emsp;&emsp;&emsp;1. 事件委派：</br>
+&emsp;&emsp;&emsp;&emsp;它并不会把事件处理函数直接绑定到真实的节点上，而是把所有事件绑定到结构的最外层，使用一个统一的事件监听器，这个事件监听器上维持了一个映射来保存所有组件内部的事件监听和处理函数。当组件挂载或卸载时，只是在这个统一的事件监听器上插入或删除一些对象;当事件发生时，首先被这个统一的事件监听器处理，然后在映射里找到真正的事件处理函数并调用。这样做简化了事件处理和回收机制，效率 也有很大提升。
+&emsp;&emsp;&emsp;&emsp;2. 自动绑定</br>
+&emsp;&emsp;&emsp;&emsp;在React组件中，每个方法的上下文都会指向该组件的实例，即自动绑定 this 为当前组件。而且 React 还会对这种引用进行缓存，以达到 CPU 和内存的最优化。在使用 ES6 classes 或者纯 函数时，这种自动绑定就不复存在了，我们需要手动实现 this 的绑定。</br>
+&emsp;&emsp;几种绑定this的方法:</br>
 &emsp;&emsp;&emsp;&emsp;(1)bind 方法:<br/>
 ```jsx
 import React, { Component } from 'react';
@@ -42,7 +42,7 @@ render() {
 return <button onClick={this.handleClick.bind(this, 'test')}>Test</button>;
 } }
 ```
-如果方法只绑定，不传参，那 stage 0 草案中提供了一个便捷的方案1——双冒号语法，其作 用与 this.handleClick.bind(this) 一致，并且 Babel 已经实现了该提案。
+&emsp;&emsp;如果方法只绑定，不传参，那 stage 0 草案中提供了一个便捷的方案1——双冒号语法，其作 用与 this.handleClick.bind(this) 一致，并且 Babel 已经实现了该提案。</br>
 ```jsx
 import React, { Component } from 'react';
 class App extends Component { handleClick(e) {
@@ -64,7 +64,7 @@ class App extends Component { constructor(props) {
 } }
 ```
 &emsp;&emsp;&emsp;&emsp;(3)构造器内声明:<br/>
-箭头函数不仅是函数的“语法糖”，它还自动绑定了定义此函数作用域的 this， 因此我们不需要再对它使用 bind 方法。比如，以下方式就能运行
+箭头函数不仅是函数的“语法糖”，它还自动绑定了定义此函数作用域的 this，因此我们不需要再对它使用 bind 方法。比如，以下方式就能运行
 ```jsx
 class App extends Component { constructor(props) {
     handleClick(e) {
