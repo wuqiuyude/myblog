@@ -156,6 +156,32 @@ console.log(result1 === Number.prototype); // true
 // 抛出错误
 Reflect.getPrototypeOf(1);
 ```
+## 可被撤销的代理
+&emsp;&emsp;在被创建之后，代理通常就不能再从目标对象上被解绑。但有的情况下你可能想撤销一个代理以便让它不能再被使用。当你想通过公共接
+口向外提供一个安全的对象，并且要求要随时都能切断对某些功能的访问，这种情况下可被
+撤销的代理就会非常有用。<br/>
+&emsp;&emsp;可以使用 Proxy.revocable() 方法来创建一个可被撤销的代理，该方法接受的参数与
+Proxy 构造器的相同：一个目标对象、一个代理处理器，而返回值是包含下列属性的一个对
+象：<br/>
+&emsp;&emsp;&emsp;&emsp;1. proxy ：可被撤销的代理对象；<br/>
+&emsp;&emsp;&emsp;&emsp;2. revoke ：用于撤销代理的函数。<br/>
+&emsp;&emsp;当 revoke() 函数被调用后，就不能再对该 proxy 对象进行更多操作，任何与该代理对象交
+互的意图都会触发代理的陷阱函数，从而抛出一个错误。例如：<br/>
+```javascript
+let target = {
+    name: "target"
+};
+let { proxy, revoke } = Proxy.revocable(target, {});
+console.log(proxy.name); // "target"
+revoke();
+// 抛出错误
+console.log(proxy.name);
+```
+&emsp;&emsp;这个例子创建了一个可被撤销的代理，它对 Proxy.revocable() 方法返回的对象进行了解构
+赋值，把同名属性的值赋给了 proxy 与 revoke 变量。此时 proxy 对象可以像一个不可被
+撤销的代理那样被使用，于是 proxy.name 属性的值就是 "target" ，因为它直接传递了
+target.name 的值。然而一旦 revoke() 函数被调用， proxy 就不再是一个函数，之后试图
+访问 proxy.name 会抛出错误，同时其他对于 proxy 对象的操作也都会触发陷阱函数。
 ## 总结
 &emsp;&emsp;在 ES6 之前，特定对象（例如数组）会显示出一些非常规的、无法被开发者复制的行为，而
 代理的出现改变了这种情况。代理允许你为一些 JS 底层操作自行定义非常规行为，因此你就
