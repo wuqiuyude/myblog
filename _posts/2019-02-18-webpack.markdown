@@ -1,0 +1,287 @@
+---
+layout:     post
+title:      "webpack原理分析"
+subtitle:   "frontend module"
+date:       2019-02-18 19:00:00
+author:     "wuqiuyu"
+header-img: "img/in-post/what-is-webpack.png"
+header-mask: 0.3
+catalog:    true
+tags:
+    - webpack
+    - 前端工具
+---
+# 一、什么是webpack
+&emsp;&emsp;webpack是一个现代 JavaScript 应用程序的
+静态模块打包器(module bundler)。当 webpack 处理应用程序时，它会递归地构建一个
+依赖关系图(dependency graph)，其中包含应用程序需要的每个模块，然后将所有这些模块打包成一个或多个bundle。<br/>
+&emsp;&emsp;这里提到了模块的概念，在webpack中所有的文件都被当做模块，webpack通过处理将这些模块打包输出为可供第三方使用的文件。<br/>
+&emsp;&emsp;webpack官网的这张图很好的展示了webpack打包的特性。<br/>
+![图片](https://user-gold-cdn.xitu.io/2019/2/11/168db49841a84bb6?w=2332&h=1016&f=png&s=161119)
+
+## 1、webpack的基本语法
+&emsp;&emsp;webpack比较核心的概念主要有一下几个：<br/>
+&emsp;&emsp;&emsp;&emsp;Entry：配置模块的入口，入口文件可以是一个也可以是多个<br/>
+&emsp;&emsp;&emsp;&emsp;Output：配置如何输出最终代码<br/>
+&emsp;&emsp;&emsp;&emsp;Module：配置处理模块的规则，webpack从Entry开始递归找出所有的依赖的模块<br/>
+&emsp;&emsp;&emsp;&emsp;Plugins：配置扩展插件，webpack构建流程中会在特定时机广播对应的事件，插件可以监听这些事件的发生，在特定的时机做对应的事情<br/>
+&emsp;&emsp;&emsp;&emsp;Loader:  模块转换器，用于将模块的原内容根据一定规则转换为新内容<br/>
+&emsp;&emsp;&emsp;&emsp;Resolvue：配置寻找模块的规则<br/>
+&emsp;&emsp;&emsp;&emsp;DevServer：配置DevServer<br/>
+&emsp;&emsp;&emsp;&emsp;chunk：code splitting 后的产物，也就是按需加载的分块，装载了不同的 module。<br/>
+### Loader 
+&emsp;&emsp;loader是用来加载处理各种形式的模块,本质上是一个函数, 接受文件作为参数,返回转化后的结构。
+```javascript
+ module: {
+       rules: [
+           {
+               test: /\.css$/,  // 正则匹配所有.css后缀的样式文件
+               use: ['style-loader', 'css-loader'] // 使用这两个loader来加载样式文件
+           }
+       ]
+   }
+```
+&emsp;&emsp;（1）Webpack在模块中搜索在css的依赖项，如果发现有import 'xxx.css' 或者 require('xxx.css')的时候，Webpack将css文件交给“css-loader”去处理<br/>
+
+&emsp;&emsp;(2) css-loader加载所有的css文件以及css自身的依赖（如，@import 其他css）到JSON对象里，Webpack然后将处理结果传给“style-loader”。<br/>
+
+&emsp;&emsp;(3) style-loader接受JSON值然后添加一个style标签并将其内嵌到html文件里
+
+&emsp;&emsp;模拟一个简单的style-loader
+```javascript
+//将css插入到head标签内部
+module.exports = function (source) {
+    let script = (`
+      let style = document.createElement("style");
+      style.innerText = ${JSON.stringify(source)};
+      document.head.appendChild(style);
+   `);
+    return script;
+}
+//使用方式
+resolveLoader: {
+   modules: [path.resolve('node_modules'), path.resolve(__dirname, 'src', 'loaders')]
+},
+{
+    test: /\.css$/,
+    use: ['style-loader']
+}
+```
+&emsp;&emsp;Loaders可以被链式调用。它们像管道（pipeline）一样处理资源。只有最后一个loader返回JavaScript格式的代码，而其他的loader可以返回任意格式并将其传给下一个loader。
+接受query参数，这意味着我们可以把配置项传给loader。Loaders是从右往左执行
+```javascript
+
+        {
+            test: /\.vue$/,
+            loader: 'vue-loader',
+            options: {
+                loaders: {
+                    'scss': 'vue-style-loader!css-loader!sass-loader',
+                    'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
+                }
+            }
+        }
+```
+### chunk
+&emsp;&emsp;webpack将chunk分为三种类型<br/>
+&emsp;&emsp;&emsp;&emsp;entry chunk<br/>
+&emsp;&emsp;入口代码块包含了 webpack 运行时需要的一些函数，如 webpackJsonp, __webpack_require__ 等以及依赖的一系列模块<br/>
+
+&emsp;&emsp;normal chunk<br/>
+&emsp;&emsp;&emsp;&emsp;普通代码块没有包含运行时需要的代码，主要指代那些应用运行时动态加载的模块，其结构有加载方式决定，如基于异步的方式可能会包含 webpackJsonp 的调用。<br/>
+
+&emsp;&emsp;initial chunk<br/>
+&emsp;&emsp;&emsp;&emsp;initial chunk本质上还是normal chunk，不过其会在应用初始化时完成加载，往往这个类型的chunk由CommonsChunkPlugin生成。
+与入口代码块对应的一个概念是入口模块（module 0），如果入口代码块中包含了入口模块 webpack 会立即执行这个模块，否则会等待包含入口模块的代码块，包含入口模块的代码块其实就是initial chunk。<br/>
+&emsp;&emsp;code splitting<br/>
+&emsp;&emsp;&emsp;&emsp;利用webpack提供的code splitting功能可生成不同类型的chunk
+
+### 输出文件分析
+```javascript
+//show.js
+// 操作 DOM 元素，把 content 显示到网页上
+function show(content) {
+  window.document.getElementById('app').innerText = 'Hello,' + content;
+}
+
+// 通过 CommonJS 规范导出 show 函数
+module.exports = show;
+```
+```javascript
+// main.js
+// 通过 CommonJS 规范导入 show 函数
+const show = require('./show.js');
+// 执行 show 函数
+show('Webpack');
+```
+&emsp;&emsp;经过webpack的转换，输出的bundle.js文件如下：
+```javascript
+(
+    // webpackBootstrap 启动函数
+    // modules 即为存放所有模块的数组，数组中的每一个元素都是一个函数
+    function (modules) {
+        // 安装过的模块都存放在这里面
+        // 作用是把已经加载过的模块缓存在内存中，提升性能
+        var installedModules = {};
+
+        // 去数组中加载一个模块，moduleId 为要加载模块在数组中的 index
+        // 作用和 Node.js 中 require 语句相似
+        function __webpack_require__(moduleId) {
+            // 如果需要加载的模块已经被加载过，就直接从内存缓存中返回
+            if (installedModules[moduleId]) {
+                return installedModules[moduleId].exports;
+            }
+
+            // 如果缓存中不存在需要加载的模块，就新建一个模块，并把它存在缓存中
+            var module = installedModules[moduleId] = {
+                // 模块在数组中的 index
+                i: moduleId,
+                // 该模块是否已经加载完毕
+                l: false,
+                // 该模块的导出值
+                exports: {}
+            };
+
+            // 从 modules 中获取 index 为 moduleId 的模块对应的函数
+            // 再调用这个函数，同时把函数需要的参数传入
+            modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+            // 把这个模块标记为已加载
+            module.l = true;
+            // 返回这个模块的导出值
+            return module.exports;
+        }
+
+        // Webpack 配置中的 publicPath，用于加载被分割出去的异步代码
+        __webpack_require__.p = "";
+
+        // 使用 __webpack_require__ 去加载 index 为 0 的模块，并且返回该模块导出的内容
+        // index 为 0 的模块就是 main.js 对应的文件，也就是执行入口模块
+        // __webpack_require__.s 的含义是启动模块对应的 index
+        return __webpack_require__(__webpack_require__.s = 0);
+
+    })(
+
+    // 所有的模块都存放在了一个数组里，根据每个模块在数组的 index 来区分和定位模块
+    [
+        /* 0 */
+        (function (module, exports, __webpack_require__) {
+            // 通过 __webpack_require__ 规范导入 show 函数，show.js 对应的模块 index 为 1
+            const show = __webpack_require__(1);
+            // 执行 show 函数
+            show('Webpack');
+        }),
+        /* 1 */
+        (function (module, exports) {
+            function show(content) {
+                window.document.getElementById('app').innerText = 'Hello,' + content;
+            }
+            // 通过 CommonJS 规范导出 show 函数
+            module.exports = show;
+        })
+    ]
+);
+```
+&emsp;&emsp;bundle.js 最后输出的文件是一个立即执行函数，bundle.js 能直接运行在浏览器中的原因在于输出的文件中通过 __webpack_require__ 函数定义了一个可以在浏览器中执行的加载函数来模拟 Node.js 中的 require 语句。<br/>
+&emsp;&emsp;原来一个个独立的模块文件被合并到了一个单独的 bundle.js 的原因在于浏览器不能像 Node.js 那样快速地去本地加载一个个模块文件，而必须通过网络请求去加载还未得到的文件。
+如果模块数量很多，加载时间会很长，因此把所有模块都存放在了数组中，执行一次网络加载。<br/>
+&emsp;&emsp;__webpack_require__ 函数的实现，还对Webpack 做了缓存优化：<br/>
+&emsp;&emsp;&emsp;&emsp;执行加载过的模块不会再执行第二次，执行结果会缓存在内存中，当某个模块第二次被访问时会直接去内存中读取被缓存的返回值。<br/>
+&emsp;&emsp;模块数组作为参数传入IIFE函数后，IIFE做了一些初始化工作：<br/>
+&emsp;&emsp;&emsp;&emsp;（1）IIFE首先定义了installedModules ，这个变量被用来缓存已加载的模块。<br/>
+&emsp;&emsp;&emsp;&emsp;（2）定义了__webpack_require__ 这个函数，函数参数为模块的id。这个函数用来实现模块的require。<br/>
+&emsp;&emsp;&emsp;&emsp;（3）__webpack_require__ 函数首先会检查是否缓存了已加载的模块，如果有则直接返回缓存模块的exports。<br/>
+&emsp;&emsp;&emsp;&emsp;（4）如果没有缓存，也就是第一次加载，则首先初始化模块，并将模块进行缓存。<br/>
+&emsp;&emsp;&emsp;&emsp;（5）然后调用模块函数，也就是前面webpack对我们的模块的包装函数，将module、module.exports和__webpack_require__作为参数传入。注意这里做了一个动态绑定，将模块函数的调用对象绑定为module.exports，这是为了保证在模块中的this指向当前模块。<br/>
+&emsp;&emsp;&emsp;&emsp;（6）调用完成后，模块标记为已加载。<br/>
+&emsp;&emsp;&emsp;&emsp;（7）返回模块exports的内容。<br/>
+&emsp;&emsp;&emsp;&emsp;（8）利用前面定义的__webpack_require__ 函数，require第0个模块，也就是入口模块。<br/>
+### Plugins 插件
+&emsp;&emsp;插件plugin,webpack重要的组成部分。它以事件流的方式让用户可以直接接触到webpack的整个编译过程。<br/>
+&emsp;&emsp;plugin是一个具有 apply方法的 js对象。 apply方法会被 webpack的 compiler（编译器）对象调用，并且 compiler 对象可在整个 compilation（编译）生命周期内访问。<br/>
+&emsp;&emsp;webpack插件的组成：<br/>
+&emsp;&emsp;&emsp;&emsp;一个JavaScript函数或者class（ES6语法）。<br/>
+&emsp;&emsp;&emsp;&emsp;在它的原型上定义一个apply方法。<br/>
+&emsp;&emsp;&emsp;&emsp;指定挂载的webpack事件钩子。<br/>
+&emsp;&emsp;&emsp;&emsp;处理webpack内部实例的特定数据。<br/>
+&emsp;&emsp;&emsp;&emsp;功能完成后调用webpack提供的回调。<br/>
+```javascript
+class UglifyJsPlugin {
+    apply(compiler) {
+        const options = this.options;
+        options.test = options.test || /\.js($|\?)/i;
+
+        ......
+
+        //绑定compilation事件
+        compiler.plugin("compilation", (compilation) => {
+            if (options.sourceMap) {
+                compilation.plugin("build-module", (module) => {
+                    // to get detailed location info about errors
+                    module.useSourceMap = true;
+                });
+            }
+            //绑定optimize-chunk-assets事件
+            compilation.plugin("optimize-chunk-assets", (chunks, callback) => {
+                const files = [];
+                chunks.forEach((chunk) => files.push.apply(files, chunk.files));
+
+                ......
+
+                callback();
+            });
+        });
+    }
+}
+module.exports = UglifyJsPlugin; 
+```
+### 事件流
+&emsp;&emsp;Webpack 的运行流程是一个串行的过程，从启动到结束会依次执行以下流程：<br/>
+&emsp;&emsp;&emsp;&emsp;（1）初始化参数：从配置文件和 Shell 语句中读取与合并参数，得出最终的参数；<br/>
+&emsp;&emsp;&emsp;&emsp;（2）开始编译：用上一步得到的参数初始化 Compiler 对象，加载所有配置的插件，执行对象的 run 方法开始执行编译；<br/>
+&emsp;&emsp;&emsp;&emsp;（3）确定入口：根据配置中的 entry 找出所有的入口文件；<br/>
+&emsp;&emsp;&emsp;&emsp;（4）编译模块：从入口文件出发，调用所有配置的 Loader 对模块进行翻译，再找出该模块依赖的模块，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理；<br/>
+&emsp;&emsp;&emsp;&emsp;（5）完成模块编译：在经过第4步使用 Loader 翻译完所有模块后，得到了每个模块被翻译后的最终内容以及它们之间的依赖关系；<br/>
+&emsp;&emsp;&emsp;&emsp;（6）输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk，再把每个 Chunk 转换成一个单独的文件加入到输出列表，这步是可以修改输出内容的最后机会；<br/>
+&emsp;&emsp;&emsp;&emsp;（7）输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统。<br/>
+![图片](https://img.alicdn.com/tps/TB1GVGFNXXXXXaTapXXXXXXXXXX-4436-4244.jpg)
+&emsp;&emsp;在以上过程中，Webpack 会在特定的时间点广播出特定的事件，插件在监听到感兴趣的事件后会执行特定的逻辑，并且插件可以调用 Webpack 提供的 API 改变 Webpack 的运行结果。webpack核心使用Tapable 来实现插件(plugins)的binding（绑定）和applying（应用）。
+
+### tapable介绍
+&emsp;&emsp;tapable是webpack官方开发维护的一个小型库,能够让我们为javascript模块添加并应用插件。 它可以被其它模块继承或混合。它类似于NodeJS的 EventEmitter 类,专注于自定义事件的发射和操作。 除此之外, Tapable 允许你通过回调函数的参数访问事件的生产者。<br/>
+![图片](/img/in-post/tapable.png)
+```javascript
+// 模拟两个插件
+var _plugins = {
+    "emit":[
+        function(a,b,cb){
+            setTimeout(()=>{
+              console.log('1',a,b);
+              cb();
+            },1000);
+        },
+        function(a,b,cb){
+            setTimeout(()=>{
+                console.log('2',a,b);
+                cb();
+            },500)
+        }
+    ]
+}
+
+applyPluginsAsync("emit",'aaaa','bbbbb',function(){console.log('end')});
+
+// 输出结果：
+
+// 1 aaaa bbbbb
+// 2 aaaa bbbbb
+//  end
+
+```
+&emsp;&emsp;&emsp;&emsp;compiler(编译器)和compilation(编译)
+在webpack插件开发中最重要的两个核心概念就是 compiler 和 compilation 。
+UglifyJsPlugin
+在optimize-chunk-assets时，将每个chunk逐一uglify一把，然后再输出结果文件。
+#### compiler
+&emsp;&emsp;compiler对象代表的是配置完备的Webpack环境。 compiler对象只在Webpack启动时构建一次，由Webpack组合所有的配置项构建生成。<br/>
+&emsp;&emsp;compiler对象继承自前面我们介绍的Tapable类，其混合了 Tapable 类以吸收其功能来注册和调用自身的插件。 大多数面向用户的插件，都是首先在 Compiler 上注册的。
+
