@@ -86,17 +86,14 @@ class Test extends Component {
   ```
   如此做毫无必要（你可以直接使用 this.props.color），同时还产生了 bug（更新 prop 中的 color 时，并不会影响 state）。<br/>
   只有在你刻意忽略 prop 更新的情况下使用。此时，应将 prop 重命名为 initialColor 或 defaultColor。必要时，你可以修改它的 key，以强制“重置”其内部 state。
-
 ![图片](/img/in-post/react/7.png)
 ### getDerivedStateFromProps
 &emsp;&emsp;getDerivedStateFromProps，是在16.3版本之后出现的新的生命周期函数，该函数在组件每次被rerender的时候，包括在组件构建之后(render之前最后执行)，每次获取新的props或state之后执行。在v16.3版本时，组件state的更新不会触发该生命周期。<br/>
-&emsp;&emsp;每次接收新的props之后都会返回一个对象作为新的state，返回null则说明不需要更新state.<br/>
-&emsp;&emsp;配合componentDidUpdate，可以覆盖componentWillReceiveProps的所有用法<br/>
+&emsp;&emsp;每次接收新的props之后都会返回一个对象作为新的state，返回null则说明不需要更新state.
+配合componentDidUpdate，可以覆盖componentWillReceiveProps的所有用法<br/>
 &emsp;&emsp;派生状态会导致代码冗余，并使组件难以维护，所以尽量不要用它，而是使用更简单的替代方案：<br/>
 &emsp;&emsp;&emsp;&emsp;如果你需要执行副作用（例如，数据提取或动画）以响应 props 中的更改，请改用 componentDidUpdate。<br/>
-
 &emsp;&emsp;&emsp;&emsp;如果只想在 prop 更改时重新计算某些数据，请使用 memoization helper 代替。<br/>
-
 &emsp;&emsp;&emsp;&emsp;如果你想在 prop 更改时“重置”某些 state，请考虑使组件完全受控或使用 key 使组件完全不受控 代替。<br/>
 ```javascript
 class Example extends React.Component {
