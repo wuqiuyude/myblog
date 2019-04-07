@@ -4,13 +4,14 @@ title:      "React实战进阶学习笔记（1）"
 subtitle:   "React Actual Combat(1) "
 date:       2019-04-07 12:00:00
 author:     "wuqiuyu"
-header-img: "img/in-post/react4.jpg"
+header-img: "img/in-post/react4.png"
 header-mask: 0.3
 catalog:    true
 tags:
     - React
+    - Array
 ---
-> 这个系列是极客时间上React实战进阶这门课的学习笔记，课程主要是对一些知识点的总结，还是比较简单的，所以这个系列会对一些知识点扩展一下，更加详细的记录一下<br>
+>这个系列是极客时间上React实战进阶这门课的学习笔记，课程主要是对一些知识点的总结，还是比较简单的，所以这个系列会对一些知识点扩展一下，更加详细的记录一下<br>
 ## 一、React组件
 &emsp;&emsp;React是一个用于构建用户界面的JAVASCRIPT库，React要用于构建UI。
 ### 1、以组件的方式考虑UI的构建
