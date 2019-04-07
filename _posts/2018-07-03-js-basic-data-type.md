@@ -10,6 +10,7 @@ catalog:    true
 tags:
     - javascript
     - 你不知道的javascript
+    - 读书笔记
 ---
 
 

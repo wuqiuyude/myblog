@@ -11,6 +11,7 @@ tags:
     - javascript
     - this
     - 你不知道的javascript
+    - 读书笔记
 ---
 > 《你不知道的javascript》读书笔记第二篇，对this、对象和类有了新的理解
 

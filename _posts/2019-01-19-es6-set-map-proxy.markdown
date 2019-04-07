@@ -12,6 +12,7 @@ tags:
     - proxy
     - Reflection
     - 深入理解ES6
+    - 读书笔记
 ---
 > 深入理解ES6第12章-代理（Proxy）和反射（Reflection）API，Vue3.0的数据监听采用了ES6的新语法Proxy，这篇主要介绍一下什么是Proxy。
 
