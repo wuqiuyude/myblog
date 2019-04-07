@@ -1,4 +1,4 @@
- ---
+---
 layout:     post
 title:      "React实战进阶学习笔记（1）"
 subtitle:   "React Actual Combat(1) "
@@ -12,30 +12,30 @@ tags:
 ---
 > 这个系列是极客时间上React实战进阶这门课的学习笔记，课程主要是对一些知识点的总结，还是比较简单的，所以这个系列会对一些知识点扩展一下，更加详细的记录一下<br>
 ## 一、React组件
-&emsp;&emsp; React是一个用于构建用户界面的JAVASCRIPT库，React要用于构建UI。
+&emsp;&emsp;React是一个用于构建用户界面的JAVASCRIPT库，React要用于构建UI。
 ### 1、以组件的方式考虑UI的构建
-&emsp;&emsp; 将UI组成成组件树的形式<br/>
+&emsp;&emsp;将UI组成成组件树的形式<br/>
 ![图片](/img/in-post/react/1.png)
 &emsp;&emsp;理解React组件：<br/>
-&emsp;&emsp; &emsp;&emsp; 1、React组件一般不提供方法，而是某种状态机<br/>
-&emsp;&emsp; &emsp;&emsp; 2、React组件可以理解为一个纯函数<br/>
-&emsp;&emsp; &emsp;&emsp; 3、单向数据绑定<br/>
+&emsp;&emsp;&emsp;&emsp;1、React组件一般不提供方法，而是某种状态机<br/>
+&emsp;&emsp;&emsp;&emsp;2、React组件可以理解为一个纯函数<br/>
+&emsp;&emsp;&emsp;&emsp;3、单向数据绑定<br/>
 ![图片](/img/in-post/react/2.png)
 ### 2、何时创建组件:单一职责原则
-&emsp;&emsp; 组件应该只完成一个功能<br/>
-&emsp;&emsp; &emsp;&emsp; 1、每个组件只做一个事情<br/>
-&emsp;&emsp; &emsp;&emsp; 2、如果组件变得复杂，那么应该拆分成小组件，组件很大的时候状态变化会导致整个组件刷新，降低性能<br/>
+&emsp;&emsp;组件应该只完成一个功能<br/>
+&emsp;&emsp;&emsp;&emsp;1、每个组件只做一个事情<br/>
+&emsp;&emsp;&emsp;&emsp;2、如果组件变得复杂，那么应该拆分成小组件，组件很大的时候状态变化会导致整个组件刷新，降低性能<br/>
 ### 3、数据状态管理：DRY原则
 &emsp;&emsp;DRY原则，Don’t Repeat Yourself。<br/>
-&emsp;&emsp; &emsp;&emsp; 1、能计算得到的状态就不要单独存储<br/>
-&emsp;&emsp; &emsp;&emsp; 2、组件尽量无状态，所需数据通过props获得<br/>
+&emsp;&emsp;&emsp;&emsp;1、能计算得到的状态就不要单独存储<br/>
+&emsp;&emsp;&emsp;&emsp;2、组件尽量无状态，所需数据通过props获得<br/>
 ### 3、JSX
 ![图片](/img/in-post/react/3.png)
 &emsp;&emsp;JSX优点<br/>
 &emsp;&emsp;&emsp;&emsp;1、声明式创建界面的直观<br/>
 &emsp;&emsp;&emsp;&emsp;2、代码动态创建界面的灵活<br/>
 &emsp;&emsp;&emsp;&emsp;3、无需学习新的模本语言<br/>
-&emsp;&emsp;约定： 所有的自定义组件都需要以大写字母开头<br/>
+&emsp;&emsp;约定：所有的自定义组件都需要以大写字母开头<br/>
 &emsp;&emsp;&emsp;&emsp;1、React认为小写的tag都是原生的DOM组件，如div<br/>
 &emsp;&emsp;&emsp;&emsp;2、所有大写的组件是自定义组件<br/>
 &emsp;&emsp;&emsp;&emsp;3、JSX可以直接使用使用属性语法，例如<menu.item /><br/>
@@ -43,27 +43,27 @@ tags:
 ![图片](/img/in-post/react/6.png)
 &emsp;&emsp;上面这张图的生命周期是React16.3之后的生命周期。主要分为三个阶段：<br/>
 &emsp;&emsp;&emsp;&emsp;(1)、Render阶段，这个阶段是纯净没有副作用的，可能会被React暂停、终止或重新启动。主要包括constructor、getDerivedStateFromProps、shouldComponentUpdate、render四个生命周期函数。<br/>
-&emsp;&emsp;&emsp;&emsp;（2）、Per-commit阶段，这个阶段可以读取DOM。主要包括getSnapshotBeforeUpdate这个生命周期函数<br/>
-&emsp;&emsp;&emsp;&emsp;（3）、commit阶段，可以使用DOM, 运行副作用，安排更新。包括componentDidMount,<br/>componentDidUpdate,componentWillUnmount三个生命周期。<br/>
-&emsp;&emsp;当组件实例被创建并插入 DOM 中时，其生命周期调用顺序如下：<br/>
+&emsp;&emsp;&emsp;&emsp;(2)、Per-commit阶段，这个阶段可以读取DOM。主要包括getSnapshotBeforeUpdate这个生命周期函数<br/>
+&emsp;&emsp;&emsp;&emsp;(3)、commit阶段，可以使用DOM, 运行副作用，安排更新。包括componentDidMount,<br/>componentDidUpdate,componentWillUnmount三个生命周期。<br/>
+&emsp;&emsp;当组件实例被创建并插入DOM中时，其生命周期调用顺序如下：<br/>
 &emsp;&emsp;&emsp;&emsp;constructor()<br/>
 &emsp;&emsp;&emsp;&emsp;static getDerivedStateFromProps()<br/>
 &emsp;&emsp;&emsp;&emsp;render()<br/>
 &emsp;&emsp;&emsp;&emsp;componentDidMount()<br/>
-&emsp;&emsp;当组件的 props 或 state 发生变化时会触发更新。组件更新的生命周期调用顺序如下：<br/>
+&emsp;&emsp;当组件的props或state发生变化时会触发更新。组件更新的生命周期调用顺序如下：<br/>
 &emsp;&emsp;&emsp;&emsp;static getDerivedStateFromProps()<br/>
 &emsp;&emsp;&emsp;&emsp;shouldComponentUpdate()<br/>
 &emsp;&emsp;&emsp;&emsp;render()<br/>
 &emsp;&emsp;&emsp;&emsp;getSnapshotBeforeUpdate()<br/>
 &emsp;&emsp;&emsp;&emsp;componentDidUpdate()<br/>
-&emsp;&emsp;当组件从 DOM 中移除时会调用如下方法：<br/>
+&emsp;&emsp;当组件从DOM中移除时会调用如下方法：<br/>
 &emsp;&emsp;&emsp;&emsp;componentWillUnmount()<br/>
 &emsp;&emsp;当渲染过程，生命周期，或子组件的构造函数中抛出错误时，会调用如下方法<br/>
 &emsp;&emsp;&emsp;&emsp;static getDerivedStateFromError()<br/>
 &emsp;&emsp;&emsp;&emsp;componentDidCatch()<br/>
 ### construct
-&emsp;&emsp; 1、用于初始化内部状态，很少使用
-&emsp;&emsp; 2、唯一可以直接修改state的地方
+&emsp;&emsp;1、用于初始化内部状态，很少使用
+&emsp;&emsp;2、唯一可以直接修改state的地方
 ```javascript
 import React, { Component } from 'react';
 class Test extends Component {
@@ -88,9 +88,9 @@ class Test extends Component {
 
 ![图片](/img/in-post/react/7.png)
 ### getDerivedStateFromProps
-&emsp;&emsp; getDerivedStateFromProps，是在16.3版本之后出现的新的生命周期函数，该函数在组件每次被rerender的时候，包括在组件构建之后(render之前最后执行)，每次获取新的props或state之后执行。在v16.3版本时，组件state的更新不会触发该生命周期。<br/>
-&emsp;&emsp; 每次接收新的props之后都会返回一个对象作为新的state，返回null则说明不需要更新state.<br/>
-&emsp;&emsp; 配合componentDidUpdate，可以覆盖componentWillReceiveProps的所有用法<br/>
+&emsp;&emsp;getDerivedStateFromProps，是在16.3版本之后出现的新的生命周期函数，该函数在组件每次被rerender的时候，包括在组件构建之后(render之前最后执行)，每次获取新的props或state之后执行。在v16.3版本时，组件state的更新不会触发该生命周期。<br/>
+&emsp;&emsp;每次接收新的props之后都会返回一个对象作为新的state，返回null则说明不需要更新state.<br/>
+&emsp;&emsp;配合componentDidUpdate，可以覆盖componentWillReceiveProps的所有用法<br/>
 &emsp;&emsp;派生状态会导致代码冗余，并使组件难以维护，所以尽量不要用它，而是使用更简单的替代方案：<br/>
 &emsp;&emsp;&emsp;&emsp;如果你需要执行副作用（例如，数据提取或动画）以响应 props 中的更改，请改用 componentDidUpdate。<br/>
 
@@ -106,7 +106,7 @@ class Example extends React.Component {
 ```
 ![图片](/img/in-post/react/8.png)
 ### componentDidMount
-&emsp;&emsp; 组件挂载到DOM后调用，且只会被调用一次。componentDidMount() 会在组件挂载后（插入 DOM 树中）立即调用。依赖于 DOM 节点的初始化应该放在这里。如需通过网络请求获取数据，此处是实例化请求的好地方。可以直接在这个生命周期调用setState方法，它将触发额外渲染，但此渲染会发生在浏览器更新屏幕之前。<br/>
+&emsp;&emsp;组件挂载到DOM后调用，且只会被调用一次。componentDidMount() 会在组件挂载后（插入 DOM 树中）立即调用。依赖于 DOM 节点的初始化应该放在这里。如需通过网络请求获取数据，此处是实例化请求的好地方。可以直接在这个生命周期调用setState方法，它将触发额外渲染，但此渲染会发生在浏览器更新屏幕之前。<br/>
 ![图片](/img/in-post/react/9.png)
 ### componentWillUnmount
 &emsp;&emsp;componentWillUnmount() 会在组件卸载及销毁之前直接调用。在此方法中执行必要的清理操作，例如，清除 timer，取消网络请求或清除在 componentDidMount() 中创建的订阅等。componentWillUnmount() 中不应调用 setState()，因为该组件将永远不会重新渲染。组件实例卸载后，将永远不会再挂载它。<br/>
