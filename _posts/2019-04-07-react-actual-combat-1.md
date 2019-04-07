@@ -74,7 +74,7 @@ class Test extends Component {
 ```
 &emsp;&emsp; 在construct中，会对组件做一些初始化的操作，super(props)用来调用基类的构造方法( constructor() ), 也将父组件的props注入给子组件，功子组件读取(组件中props只读不可变，state可变)。
 而constructor()用来做一些组件的初始化工作，如定义this.state的初始内容。
-> 注意<br/>
+注意<br/>
   避免将 props 的值复制给 state！这是一个常见的错误：<br/>
   ```javascript
   constructor(props) {
@@ -85,6 +85,7 @@ class Test extends Component {
   ```
   如此做毫无必要（你可以直接使用 this.props.color），同时还产生了 bug（更新 prop 中的 color 时，并不会影响 state）。<br/>
   只有在你刻意忽略 prop 更新的情况下使用。此时，应将 prop 重命名为 initialColor 或 defaultColor。必要时，你可以修改它的 key，以强制“重置”其内部 state。
+  
 ![图片](/img/in-post/react/7.png)
 ### getDerivedStateFromProps
 &emsp;&emsp;getDerivedStateFromProps，是在16.3版本之后出现的新的生命周期函数，该函数在组件每次被rerender的时候，包括在组件构建之后(render之前最后执行)，每次获取新的props或state之后执行。在v16.3版本时，组件state的更新不会触发该生命周期。<br/>
