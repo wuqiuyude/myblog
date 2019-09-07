@@ -5,7 +5,7 @@ subtitle: 'The how and why on React’s usage of linked list in Fiber to walk th
 '
 date: 2019-09-03 19:00:00
 author: 'wuqiuyu'
-header-img: 'img/in-post/blog_node.jpg'
+header-img: 'https://res.cloudinary.com/indepth-dev/image/upload/w_1400,f_auto/local_media/2019/07/work-loop.png'
 header-mask: 0.3
 catalog: true
 tags:
