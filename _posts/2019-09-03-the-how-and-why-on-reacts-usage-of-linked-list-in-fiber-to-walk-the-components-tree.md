@@ -22,7 +22,7 @@ tags:
 &emsp;&emsp;现在如果你用Google搜索“React Fiber”你可以在结果中看到很多的文章。所有的这些文章，除了[Andrew Clark的这篇](https://github.com/acdlite/react-fiber-architecture?source=post_page)都是非常高深的解释。在这篇文章中，我会参考Andrew Clark的这篇，对Fiber中一些非常重要的概念提供一个更详尽的解释。一旦我们完成这些，你会对[Lin Clark在ReactConf 2017](https://www.youtube.com/watch?v=ZCuYPiUIONs&source=post_page)的关于事件循环的概念有一个深入的理解。这个演讲你需要看看，但是花一些时间阅读文本之后，对你来说会更容易理解。<br/>
 &emsp;&emsp;这篇文章是React的Fiber内部机制一个系列的开端。我大约70%的是通过理解内部实现了解的，此外还看了三篇关于协调和渲染机制的文章。<br/>
 &emsp;&emsp;让我们开始吧！<br/>
-##打基础
+## 打基础
 &emsp;&emsp;Fiber架构具有2个主要的阶段： reconciliation/render 和commit。在源代码中reconciliation阶段通常被叫做render阶段。这个阶段是React遍历组件树的阶段：<br/>
 &emsp;&emsp;&emsp;&emsp;更新state和props<br/>
 &emsp;&emsp;&emsp;&emsp;调用生命周期函数<br/>
@@ -220,7 +220,8 @@ function walk(o) {
 ![图片](https://res.cloudinary.com/indepth-dev/image/upload/f_auto,fl_lossy,q_auto/local_media/2019/07/callstack2.mp4)
 &emsp;&emsp;这就像浏览器里面的调用栈。所以利用这个算法，我们有效的使用自己的方法实现了浏览器的调用栈。这也就是Andrew所说的：<br/>
 >Fiber是针对React组件重新实现了堆栈，你可以把Fiber当作一个虚拟的堆栈帧。<br/>
-&emsp;&emsp;自从我们通过保持对节点的引用从而控制了堆栈，就像一个顶部帧一样。
+
+&emsp;&emsp;自从我们通过保持对节点的引用从而控制了堆栈，就像一个顶部帧一样。<br/>
 ```javascript
 function walk(o) {
     let root = o;
@@ -239,9 +240,9 @@ function walk(o) {
     }
 }
 ```
-&emsp;&emsp;我们可以在遍历的过程中的任何时间停止，并且在稍后重新开始遍历。这是我们能够去使用新的```requestIdleCallback```API的必要条件。
+&emsp;&emsp;我们可以在遍历的过程中的任何时间停止，并且在稍后重新开始遍历。这是我们能够去使用新的```requestIdleCallback```API的必要条件。<br/>
 ## React当中的工作循环
-这里是[React中实现任务循环的代码](https://github.com/facebook/react/blob/95a313ec0b957f71798a69d8e83408f40e76765b/packages/react-reconciler/src/ReactFiberScheduler.js?source=post_page---------------------------#L1118)：
+这里是[React中实现任务循环的代码](https://github.com/facebook/react/blob/95a313ec0b957f71798a69d8e83408f40e76765b/packages/react-reconciler/src/ReactFiberScheduler.js?source=post_page---------------------------#L1118)：<br/>
 ```javascript
 function workLoop(isYieldy) {
     if (!isYieldy) {
