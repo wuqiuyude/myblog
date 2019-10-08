@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 'React的Fiber为什么以及如何使用链表遍历组件树'
-subtitle: 'The how and why on React’s usage of linked list in Fiber to walk the component’s tree
+title: 'Fiber内部：深度概览React中新的调和算法'
+subtitle: 'Inside Fiber: in-depth overview of the new reconciliation algorithm in React
 '
 date: 2019-09-03 19:00:00
 author: 'wuqiuyu'
