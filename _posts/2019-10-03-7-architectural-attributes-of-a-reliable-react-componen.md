@@ -5,7 +5,7 @@ subtitle: '7 Architectural Attributes of a Reliable React Component
 September 26, 2017'
 date: 2019-10-03 19:00:00
 author: 'wuqiuyu'
-header-img: 'https://res.cloudinary.com/indepth-dev/image/upload/w_1400,f_auto/local_media/2019/07/work-loop.png'
+header-img: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=4218752244,1526948581&fm=26&gp=0.jpg'
 header-mask: 0.3
 catalog: true
 tags:
