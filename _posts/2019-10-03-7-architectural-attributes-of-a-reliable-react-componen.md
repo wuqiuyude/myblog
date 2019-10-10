@@ -61,12 +61,11 @@ tags:
 &emsp;&emsp;&emsp;&emsp;一个大组件完成了所有的事情：不必要为每个责任创建一个组件<br/>
 &emsp;&emsp;&emsp;&emsp;没有分离，没有开销： 不需要创建 props 和 callback 用于分离组件直接的通信<br/>
 &emsp;&emsp;这种幼稚的代码，在刚开始是非常容易写的。当应用增大，变的越来越复杂，之后的的修改就会越来越困难<br/>
-&emsp;&emsp;一个有多种职责的组件会在很多种情况下更新。现在暴露出来的问题是：在一个情况下修改组件会无意中影响到组件的其他责任<br/>
-![图片](https://dmitripavlutin.com/static/9011a765716b0b984c372a49c6839672/7c639/multiple-responsibilities.webp)。
+&emsp;&emsp;一个有多种职责的组件会在很多种情况下更新。现在暴露出来的问题是：在一个情况下修改组件会无意中影响到组件的其他责任。<br/>
+![图片](https://dmitripavlutin.com/static/9011a765716b0b984c372a49c6839672/7c639/multiple-responsibilities.webp)
 &emsp;&emsp;这种设计是脆弱的，无意识的副作用很难预测和控制<br/>
 &emsp;&emsp;例如：`<ChartAndForm>`组件同时执行绘制图表和处理提供给图表的表单数据的功能,`<ChartAndForm>`在 2 种情况下会更新：绘制图表和处理表单<br/>
 &emsp;&emsp;当你改变一个表单项（例如把`<input>`修改为`<select>`）你可能无意中破坏了图表的渲染，此外图表的实行也无法重用，因为它和 Form 表单耦合在一起。<br/>
-&emsp;&emsp;解决多职责的问题需要把`<ChartAndForm>`分割为 2 个组件：`<Chart>`和 `<Form>`。每个块都有自己的职责：绘制图表或者相应的处理表单。2 个块之间通过 props 进行通讯<br/>
 &emsp;&emsp;解决多职责的问题需要把`<ChartAndForm>`分割为 2 个组件：`<Chart>`和 `<Form>`。每个块都有自己的职责：绘制图表或者相应的处理表单。2 个块之间通过 props 进行通讯。<br/>
 &emsp;&emsp;最糟糕的多职责的情况是上帝组件（类似于上帝对象）。上帝组件尝试去了解和实行应用中的所有事情。你需要会看到它们被命名为`<Application>`、`<Manager>`、`<BigContainer>`或者`<Page>`，拥有超过 500 多行的代码。<br/>
 &emsp;&emsp;遵循 SRP 的原则，把上帝组件分解掉。<br/>
@@ -434,8 +433,8 @@ function If({ component: Component, condition }) {
 &emsp;&emsp;让我们来学习一下这种情况<br/>
 &emsp;&emsp;一个简单的应用，展示一个数字和 2 个按钮。第一个按钮增加，第二个按钮减小数字。<br/>
 
-<iframe id="result-iframe" class="result-iframe " sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts" allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media" tabindex="-1" data-src="https://cdpn.io/dmitri_pavlutin/fullembedgrid/BdWRpq?type=embed&amp;animations=run" src="https://cdpn.io/dmitri_pavlutin/fullembedgrid/BdWRpq?type=embed&amp;animations=run" allowtransparency="true" frameborder="0" scrolling="yes" allowpaymentrequest="true" allowfullscreen="true" name="CodePen Preview for Increase or decrease the number" title="CodePen Preview for Increase or decrease the number">
-      </iframe>
+<iframe width="100%" height="265" scrolling="no" title="Increase or decrease the number" src="//codepen.io/dmitri_pavlutin/embed/BdWRpq/?height=265&amp;theme-id=0&amp;default-tab=result&amp;embed-version=2" frameborder="no" allowtransparency="true" allowfullscreen="true" style="width: 100%;">See the Pen <a href='https://codepen.io/dmitri_pavlutin/pen/BdWRpq/'>Increase or decrease the number</a> by Dmitri Pavlutin (<a href='https://codepen.io/dmitri_pavlutin'>@dmitri_pavlutin</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
 
 &emsp;&emsp;应用包含 2 个组件：`<App>`和`<Controls>`<br/>
 &emsp;&emsp;`<App>`的 state 对象中包含 1 个可修改的 number 属性，并且渲染这个 number<br/>
@@ -644,9 +643,9 @@ function ByDevice({ children: { mobile, other } }) {
 &emsp;&emsp;在这样的环境中，有可能在合理的时间内写出一个应用吗？肯定是不行的。<br/>
 &emsp;&emsp;使用重用吧，使代码工作,而不是重复的塑造它们。<br/>
 
-### 4.2、在整个系统中重用
+### 4.1、在整个系统中重用
 
-&emsp;&emsp;根据不要重复你自己原则（DRY），系统中的每一个知识都必须有唯一的，清晰的，权威的表述。改原则倡导避免重复。<br/>
+&emsp;&emsp;根据不要重复你自己原则（DRY），系统中的每一个知识都必须有唯一的，清晰的，权威的表述。该原则倡导避免重复。<br/>
 &emsp;&emsp;代码重复在没有添加任何有意义的内容的情况下增加了系统的复杂度和维护成本。一个逻辑的更新要求你更新所有这些逻辑的副本。<br/>
 &emsp;&emsp;重复的问题由可复用组件解决。写一次，使用多次：是一个高效和节省时间的策略。<br/>
 &emsp;&emsp;但是你并不是随便就可以获得可重用性属性。一个可重用组件它符合单一职责原则并且被正确的封装。<br/>
@@ -658,12 +657,12 @@ function ByDevice({ children: { mobile, other } }) {
 &emsp;&emsp;你要想一个香蕉，你获得了一个香蕉，但是也同时附加了一片森林。<br/>
 &emsp;&emsp;正确的封装组件使得它们能够摆脱互相依赖。隐藏组件的内部结构，并且使得 props 能够在各自不同的情况下被重复利用。<br/>
 
-### 4.3、利用第三方库
+### 4.2、利用第三方库
 
 &emsp;&emsp;一个正常的工作日。你被分配了一个任务去给系统添加一个新的功能。在打开编辑器之前，先等几分钟。。。<br/>
 &emsp;&emsp;由很大的可能你要解决的问题已经被解决了。得益于 React 非常流行并且有一个很大的开源社区，这值得你花点时间去找一找现成的解决方案。<br/>
 &emsp;&emsp;看一看 [brillout/awesome-react-components](https://github.com/brillout/awesome-react-components) 这个仓库，这里有很多已经编译的可重用 react 库。
-&emsp;&emsp;一个好的库对于体系结构决策和提倡最佳实践有积极的影响。在我的经验中，有最大的影响的库是 react-router 和 redux<br/>
+一个好的库对于体系结构决策和提倡最佳实践有积极的影响。在我的经验中，有最大的影响的库是 react-router 和 redux<br/>
 &emsp;&emsp;[react-router](https://github.com/ReactTraining/react-router/)使用陈述性路由去组织一个单页面应用。使用`<Router>`将 URL 和你的组件连接到一起。当路由符合 URL 会渲染相应的组件。<br/>
 &emsp;&emsp;`redux`和`react-redux`HOC 引入了单向的，可预测的应用状态管理。它将异步和不纯的代码（例如 HTTP 请求）提出到组件外，支持单一职责原则和创建[纯或者几乎纯的组件](https://dmitripavlutin.com/7-architectural-attributes-of-a-reliable-react-component/#5-pure-or-almost-pure)<br/>
 &emsp;&emsp;确认一个第三方库是否值得使用，这里是我确认方式：<br/>
@@ -1041,7 +1040,7 @@ export default compose(
 &emsp;&emsp;现在`<WeatherFetch>`是一个纯的组件。没有副作用，并且对于相同的输入都有一个的输入。<br/>
 &emsp;&emsp;纯的`<WeatherFetch>`可预测性非常好，并且简单明了。它添加了`compose()`和`lifecycle()`两个 HOC。将不纯的组件转换为纯的组件是非常值得做的。<br/>
 
-## 可测试和测试过的
+## 6、可测试和测试过的
 
 > 一个测试过的组件是已经证实给定一个输入会有预期的输出。一个可测试组件是指容易测试的。<br/>
 
@@ -1156,7 +1155,7 @@ describe('<Controls />', function() {
 &emsp;&emsp;强封装使得组件容易测试。反之，一个没有正确封装的组件不易测试。<br/>
 &emsp;&emsp;可测试性是评判你的组件结构是否好的实用准则。<br/>
 
-## 有意义的
+## 7、有意义的
 
 > 一个有意义的组件很容易明白它是做什么的。<br/>
 
@@ -1251,7 +1250,7 @@ function GamesList({ items }) {
 &emsp;&emsp;如果一个组件有负责的逻辑，即使一个好的命名都无法解释必须的细节。那么就用文档去解释。<br/>
 &emsp;&emsp;如果文档丢失或者并没有解释所有的问题，你必须去查看源代码。这不是一最好的方法，因为会花费多余的时间，但是是可以接受的。<br/>
 
-## 持续的改进
+## 8、持续的改进
 
 &emsp;&emsp;在写这篇文章的同时，我在阅读一本有意思的书，叫做《写得好：非小说写作的经典指南》。这是一篇关于如果提供写作技巧的非常棒的书。<br/>
 &emsp;&emsp;这本书对我很重要，因为我没有任何写作的学习经验。我只是一个热爱计算机科学，经常写脚本的人。<br/>
@@ -1271,7 +1270,7 @@ function GamesList({ items }) {
 ![图片](https://dmitripavlutin.com/static/c84ad0a0f9d13b0f8c17e6e8c96da2ed/3cbe8/improvement.webp)
 &emsp;&emsp;是否组件只负责一个职责，被很好的封装，并且是充分测试的呢？如何你不能回答是，找出缺少的部分（通过比较上面讲的 7 个特征）并且重构组件。<br/>
 
-## 可靠性非常重要
+## 9、可靠性非常重要
 
 &emsp;&emsp;保证组件的质量需要付出努力和定期的回顾。这是值得投入的，因为正确的组件是一个设计良好的系统的基础。这样的系统是易于维护并且可以线性增加复杂度。<br/>
 &emsp;&emsp;另一方面，当系统体积增加，你可以会忘记去计划和定期修改结构，减少耦合。天真的只是让它工作起来。<br/>
