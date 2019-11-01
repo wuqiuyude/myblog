@@ -26,7 +26,7 @@ tags:
 &emsp;&emsp;&emsp;&emsp;如何设计组件之间的通信方法，可以防止组件耦合？<br/>
 &emsp;&emsp;幸运的是，可靠的组件有共同的特征。让我们用实例学习一下这 7 个有用的准则。<br/>
 
-## 1、单一指责
+## 1、单一职责
 
 > 一个组件如果只有一种原因导致它变化，那么它就是[单一职责](https://en.wikipedia.org/wiki/Single_responsibility_principle)的。<br/>
 
