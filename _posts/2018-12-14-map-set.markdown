@@ -1,0 +1,131 @@
+---
+layout: post
+title: 'es6新的数据结构，Map, Set, weakMap 和weakSet的区别'
+subtitle: 'the different between Map,Set,weakMap and weakSet'
+date: 2018-12-14 19:00:00
+author: 'wuqiuyu'
+header-img: 'img/in-post/es62.jpeg'
+header-mask: 0.3
+catalog: true
+tags:
+  - es6
+  - Map
+---
+
+
+
+# 对象
+
+1、对象的键名必须是字符串类型且在对象中是唯一的
+
+一个Object的键只能是[字符串](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/String)或者 [Symbols](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Symbol)，但一个 Map 的键可以是**任意值**，包括函数、对象、基本类型。
+
+Var map = Objeact.create(null)
+
+Map[5] = "foo"
+
+Console.log(Map['5']) // "foo"
+
+2、对象会对键名进行强制转换
+
+
+
+# Map
+
+1、存储着键值对的有序列表
+
+2、键名和值支持所有的数据类型
+
+3、添加元素调用set(key, value)
+
+4、获取元素get(key)，不存在返回undefined
+
+5、支持has()、delete()、clear()三个值
+
+6、支持size属性
+
+7、支持forEach
+
+8、初始化的时候传入键值对new Map([[KEY, value],[key,value]])
+
+ 
+
+# WeakMap
+
+1、存储着键值对的有序列表
+
+2、键名和值支持所有的数据类型
+
+3、添加元素调用set(key, value)
+
+4、获取元素get(key)，不存在返回undefined
+
+5、支持has()、delete()、clear()三个值
+
+6、支持size属性
+
+7、支持forEach
+
+8、初始化的时候传入键值对new Map([[KEY, value],[key,value]])
+
+
+
+ 
+
+# Set
+
+1、无重复元素的集合
+
+2、是有序列表
+
+3、new Set()的方式创建
+
+4、不会对键值进行强制转换，所以可以用对象作为键值
+
+5、has()方法检测值是否存在
+
+6、delete方法删除一个值
+
+7、clear()方法清空所有的值
+
+8、可以使用forEach方法
+
+9、可以用扩展运算符转换成数组[…set]
+
+10、强引用的set集合
+
+   let set = new Set()
+
+   key = {}
+
+   set.add(key)
+
+  console.log(set.size) // 1
+
+  key = null;
+
+  console.log(set.size) // 1
+
+  // 重新取回原始引用
+
+  key = […set][0]
+
+
+
+# Weak Set
+
+1、只存储对象的弱引用，并且不可以存储原始值
+
+2、集合中的弱引用如果是对象唯一的引用，则会被回收并释放内存
+
+3、支持add()、has()、delete()三个方法
+
+4、只支持对象参数，如果通过add()方法传入非对象参数会导致程序报错，而has()和delete()传入非对象参数会返回false
+
+5、不可以迭代，所以不能被用于for-of循环
+
+6、不会暴露任何的迭代器（keys、values）,所以无法通过程序本身检测其中的内容
+
+7、不支持foreach方法
+
+8、不支持size属性[0]
