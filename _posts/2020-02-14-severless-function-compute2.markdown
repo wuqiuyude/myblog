@@ -2,7 +2,6 @@
 layout: post
 title: '前端severless实践-阿里云函数计算'
 subtitle: 'severless'
-February 14, 2020'
 date: 2020-02-14 19:00:00
 author: 'wuqiuyu'
 header-img: 'img/in-post/timg.jpeg'
