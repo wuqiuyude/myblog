@@ -2,7 +2,18 @@
 layout: default
 title: Home
 ---
-
+<script src="//qhstaticssl.kujiale.com/newt/101194/text/javascript/1591696096539/9473709252293690C26DDA8EFBC40408.js"></script>
+        <script>
+          
+            var vConsole = new VConsole();
+            var canvas = document.querySelector('canvas');
+            var gl;
+            try {
+                gl = canvas.getContext('webgl2');
+            } catch (err) {
+                console.error(err);
+            }
+        </script>
 <div class="posts">
   {% for post in paginator.posts %}
   <div class="post">
