@@ -1,0 +1,152 @@
+---
+layout: post
+title: 'Webgl编程指南读书笔记(一)'
+subtitle: 'webgle'
+date: 2020-07-06 19:00:00
+author: 'wuqiuyu'
+header-img: 'img/in-post/webgl.jpeg'
+header-mask: 0.3
+catalog: true
+tags:
+  - webgl
+  - 计算机图像学
+---
+
+> 这个系列是学习Webgl编程指南的第一篇，主要记录1-3章的读书笔记<br/>
+
+#  WebGL程序的结构
+
+  WebGL是基于OpenGL ES 2.0建立的WebGL规范.
+![图片](/img/in-post/webgl2.png)
+  WebGL页面包含三种语言：HTML5，JavaScript,和GLSL ES。
+![图片](/img/in-post/webgl1.png)
+
+# 什么是着色器
+
+从OpenGL 2.0开始，支持一项非常重要的特性，即可编程着色器方法。着色器方法，或称为着色器，使用一种类似于C的编程语言实现了精美的视觉效果。<br/>
+WebGL需要两种着色器：<br/>
+- 顶点着色器（Vertex shader）:顶点着色器是用来描述顶点特性（如位置、颜色等）的程序。顶点（vertex）是指二维或者三维空间中的一个点，比如二维或者三维图形端点或者交点。
+- 片元着色器（Fragment shader）: 进行逐片元处理过程如光照的程序，片元（fragment）是一个WebGL术语，可以将其理解为像素（图像的单元）
+JavaScript读取啦着色器信息，然后存在WebGL系统中以供调用。
+
+![图片](/img/in-post/webgl3.png)
+
+着色器程序代码 必须预先处理称单个字符串的形式。下面是一个着色器语言示例：
+```javascript
+// 顶点着色器程序
+void main() {	
+	gl_position = vec4(0.0, 0.0, 0.0, 1.0);
+	gl_position = 10.0;
+
+}
+// 片元着色器
+void main() {
+	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0)
+}
+```
+![图片](/img/in-post/webgl4.png)
+
+GLSL ES 是一种强类型的编程语言，必须要指出变量是某种类型的。
+
+![图片](/img/in-post/webgl5.png)
+
+使用 gl.drawArrays绘制。
+![图片](/img/in-post/webgl6.png)
+
+#  WebGL坐标系统
+  WebGL是使用三维坐标系统（笛卡尔坐标系），具有X轴，Y轴和Z轴。在WebGL中面向计算机屏幕时，X轴是水平的（正方向为右），Y轴是垂直的（正方向为下），而Z轴垂直于屏幕（正方向是外）。是一个右手坐标系。但是实际上WebGL本身既不是右手坐标系也不是左手坐标系。
+![图片](/img/in-post/webgl7.png)
+# 顶点着色中的变量
+
+将信息从Javascript程序中传给顶点着色器。有两种方式可以做到这点：attribute变量和uniform变量。
+## attribute变量
+attribute变量传递的是那些与顶点相关的数据，它是一种GLSL EL变量，被用来从外部向顶点着色器内部传输数据，只有顶点着色器能使用它。
+
+
+```javascript
+// 顶点着色器程序
+
+attribute vec4 a_Position;
+void main() {	
+	gl_position = a_Position;
+	gl_position = 10.0;
+
+}
+
+```
+获取attribute变量的存储位置
+
+```javascript
+var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+```
+向attribute变量的赋值
+```javascript
+gl.vertexAttriv3f(a_Position, 0.0, 0.0, 0.0,);
+```
+## uniform变量
+uniform变量传递是那些对于所有顶点都相同（或与顶点无关）的数据。使用片元着色器的时候就需要使用uniform变量了。
+
+```javascript
+// 片元着色器程序
+
+uniform vec4 u_FragColor;
+void main() {	
+	gl_FragColor = u_FragColor;
+
+}
+
+```
+
+获取attribute变量的存储位置
+
+```javascript
+var u_FrageColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+```
+向attribute变量的赋值
+```javascript
+gl.uniform4f(u_FragColor, 0.0, 0.0, 0.0,);
+```
+
+# 缓冲区对象
+
+缓冲区对象是WebGL系统中的一块存储区，，可以在缓冲区对象中保存想要绘制的所有顶点的数据，
+![图片](/img/in-post/webgl8.png)
+使用缓冲区对象向顶点着色器传入多个顶点的数据，需要遵循以下五个步骤：
+1. 创建缓冲区对象（gl.createBuffer()）
+2. 绑定缓冲区对象（gl.bindBuffer()）
+3. 将数据写入缓冲区对象（gl.bufferData()）
+4. 将缓冲区对象分配给一个attribute变量（gl.verterAttribPointer()）
+5. 开启attribute变量（gl,enableVerterArrribArray()）
+![图片](/img/in-post/webgl9.png)
+## 类型化数组
+WebGL为每种数据结构引入了一种特殊的数组（类型化数组），用于优化性能，浏览器事先知道数组中的数据类型，处理起来更加有效率。
+![图片](/img/in-post/webgl10.png)
+![图片](/img/in-post/webgl11.png)
+类型化数组和普通数组一样，可以用new运算符调用构造函数传入数据而被创造出来。
+
+```javascript
+var vertices = new Float32Array([0.0, 0.5, -0.5, -0.5, 0.5, -0.5])
+```
+将缓冲区对象分配给attribute变量
+```javascript
+gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0)
+```
+开启attribute变量，为了是顶点着色器能够访问缓冲区内的数据，我们需要使用gl.enableVertexAttribArray()方法来开启attribute变量。
+
+## gl.drawArrays的第二个和第三个参数
+
+![图片](/img/in-post/webgl12.png)
+gl.drawArrays方法的第二个参数mode，用于指定渲染的基本图形
+![图片](/img/in-post/webgl13.png)
+
+# 移动、旋转和缩放
+图像的移动、旋转和缩放，对于简单的变换，可以通过数学表达式来实现，对于复杂的就需要采用矩阵来实现了。
+
+## 变换矩阵：旋转
+![图片](/img/in-post/webgl14.png)
+![图片](/img/in-post/webgl15.png)
+## 变换矩阵：平移
+![图片](/img/in-post/webgl16.png)
+![图片](/img/in-post/webgl17.png)
+![图片](/img/in-post/webgl18.png)
+    
