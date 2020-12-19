@@ -1,18 +1,18 @@
 ---
 layout: post
-title: 'Webgl编程指南读书笔记(一)'
-subtitle: 'webgle'
+title: 'WebGL编程指南读书笔记(一)'
+subtitle: 'WebGL'
 date: 2020-07-06 19:00:00
 author: 'wuqiuyu'
 header-img: 'img/in-post/webgl.jpeg'
 header-mask: 0.3
 catalog: true
 tags:
-  - webgl
+  - WebGL
   - 计算机图像学
 ---
 
-> 这个系列是学习Webgl编程指南的第一篇，主要记录1-3章的读书笔记<br/>
+> 这个系列是学习WebGL编程指南的第一篇，主要记录1-3章的读书笔记<br/>
 
 #  WebGL程序的结构
 
