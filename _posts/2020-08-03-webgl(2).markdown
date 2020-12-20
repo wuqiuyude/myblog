@@ -1,0 +1,216 @@
+---
+layout: post
+title: 'WebGL编程指南读书笔记(三)-OpenGL ES 着色器语言'
+subtitle: 'WebGL'
+date: 2020-09-13 20:36:29
+author: 'wuqiuyu'
+header-img: 'img/in-post/webgl.jpeg'
+header-mask: 0.3
+catalog: true
+tags:
+  - WebGL
+  - 计算机图像学
+---
+
+> 这个系列是学习WebGL编程指南的第三篇，主要记录6章的读书笔记<br/>
+
+# GLSL ES
+
+OpenGL ES着色器语言（GLSL ES）是在OpenGL着色器语言（GLSL）基础上，删除和简化之后形成的。它有以下几个特点：
+- 程序是大小写敏感的。
+- 每个语句应该以一个英文分号接受。
+
+依次执行，和c语言更接近，从main函数开始执行，有且只有一个main函数，且不接受参数。
+## 数值类型
+GLSL支持两种数据值类型。
+- 数值类型： GLSL ES支持整型数和浮点数。
+- 布尔值类型：包括true和false
+
+GLSL ES不支持字符串类型。
+
+## 变量
+变量名需要符合以下几点：
+只能包括a-z, A-Z, 0-9和下划线（_）
+- 变量名的首字母不能是数字
+- 不能包含关键字
+- 不能移gl_，webgl_或者_webgl_开头
+![图片](/img/in-post/webgl2-1.png)
+## 强类型
+GLSL ES是强类型语言，基本数据类型有以下几种：
+![图片](/img/in-post/webgl2-2.png)
+GLSL ES提供了类型转换内置函数：
+![图片](/img/in-post/webgl2-3.png)
+运算符
+![图片](/img/in-post/webgl2-4.png)
+## 矢量和矩阵
+GLSL ES支持矢量和矩阵类型，
+![图片](/img/in-post/webgl2-5.png)
+```javascript
+vec3 position; 
+ivec2 offset;
+mat4 mvpMatrix;
+```
+
+## 矢量构造函数
+```javascript
+vec3 v3 = vec3(1.0, 0.0, 0.5);
+vec2 v2 = vec2(v3); // (1.0, 0.0)
+vec4 v4 = vec4(1.0); // (1.0, 1.0, 1.0, 1.0)
+```
+## 矩阵构造函数
+
+- 可以通过传入每一个数值
+![图片](/img/in-post/webgl2-6.png)
+- 可以通过传入一个或者多个矢量
+```javascript
+vec3 v3 = vec3(1.0, 0.0, 0.5);
+vec2 v2 = vec2(v3); // (1.0, 0.0)
+vec4 v4 = vec4(1.0); // (1.0, 1.0, 1.0, 1.0)
+mat2 m2_1 = mat2(v2, v2);
+```
+- 同时传入矢量和数值
+```javascript
+vec2 v2 = vec2(1.0, 0.0）;
+mat2 m2_1 = mat2(1.0，3.0，v2);
+```
+- 传入的那个数值
+```javascript
+mat4 m4 = mat4(1.0);
+```
+## 运算符
+![图片](/img/in-post/webgl2-7.png)
+```javascript
+vec3 v3 = vec3(1.0, 2.0, 3.0);
+float f;
+f = v3.x;
+f = v3.y;
+f = v3.z;
+f = vec3[0];
+```
+
+![图片](/img/in-post/webgl2-8.png)
+
+
+## 结构体
+使用关键字struct，可以将以存在的类型聚合在一起，就可以定义为结构体。
+
+```javascript
+struct light {
+	vec4 color;
+	vec3 position;
+}
+light l1, l2;
+```
+### 赋值和构造
+
+![图片](/img/in-post/webgl2-9.png)
+
+
+
+```javascript
+struct light {
+	vec4 color;
+	vec3 position;
+}
+light l1, l2;
+vec4 color = l1.colorl
+vec3 position = l1.position;
+```
+## 数组
+只支持一维数组，而；且不支持pop()和push()操作。数组长度必须是大于0的整型常量表达式。
+- 整型字面量（如0或者1）。
+- 用const限定字修饰的全局变量或局部变量，不包括函数。
+- 由前述两条中的项组成的表达式。
+## 取样器
+GLSL ES支持的一种内置类型称为取样器。有两种：sampler2D 和samplerCube。取样器变量只能是uniform变量，或者访问纹理的函数，如texture2D()函数。比如：
+```javascript
+uniform sampler2D u_Sampler;
+```
+纹理单元彪悍是唯一能赋值给取样器变量的，可以通过gl.uniform1i()来赋值。只能用=，==和！=操作符。
+
+![图片](/img/in-post/webgl2-10.png)
+
+## 程序流程控制
+
+控制语句有如下：
+1. if/ else / else if
+2. for语句
+```javascript
+for (int 1 = 0; i < 3; i++) {
+}
+```
+3. continue, break 和 discard语句
+
+## 函数
+![图片](/img/in-post/webgl2-11.png)
+![图片](/img/in-post/webgl2-12.png)
+
+## 规范声明
+如果函数定义在调用之后，必须在调用之前进行规范声明
+
+![图片](/img/in-post/webgl2-13.png)
+## 参数限定词
+可以为函数参数指定限定字，以控制参数的行为。可以把函数参数定义为：
+- 传递给函数的
+- 将要在函数中被赋值的
+- 既是传递给函数的，也是将要在函数中被赋值的
+![图片](/img/in-post/webgl2-14.png)
+
+```javascript
+void luma2(in vec3 color, out float brightness) {
+...
+}
+```
+## 内置函数
+![图片](/img/in-post/webgl2-15.png)
+
+## 全局变量和局部变量
+### const 变量
+常量， 不能修改
+### attribut变量
+只能出现在顶点着色器中，只能被声明为全局变量，被用来表示逐顶点信息。attribute变量的类型只能是float，vec2、vec3、vec4、mat2、mat3和mat4。比如：
+
+
+```javascript
+ attribute vec4 a_Color;
+```
+![图片](/img/in-post/webgl2-16.png)
+
+### uniform变量
+uniform变量可以用在顶点和片元着色器中，且必须是全局变量。只能是只读，可以是除数组和结构体之外的任意数据。如果顶点着色器和片元着色器中声明了同名的uniform，那么就会被两种着色器共享。unifor变量保护一致的数据，比如变换矩阵是所有顶点公用的，就可以用uniform 变量。
+```javascript
+uniform mat4 u_ViewMatrix;
+```
+
+### varying变量
+varying变量必须是全局变量。它的任务是从顶点着色器向片元着色器传输数据。必须在两种着色器中声明同名、同类型的varying变量。
+
+```javascript
+varying vec2 v_TexCood;
+varying vec4 v_Color;
+```
+varying变量只能出现以下类型：float、vec2、vec3、vec4、mat2、mat3和mat4
+
+### 精度限定字
+用来表示每种数据的精度。
+```javascript
+
+precision mediump float;
+mediump float size;
+
+```
+![图片](/img/in-post/webgl2-17.png)
+
+![图片](/img/in-post/webgl2-18.png)
+
+### 预处理指令
+用来在真正代码运行之前进行预处理
+```javascript
+#ifdef GL_ES
+precision mediump float;
+
+#endif
+```
+
+
+
