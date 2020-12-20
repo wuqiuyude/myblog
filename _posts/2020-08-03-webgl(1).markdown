@@ -1,0 +1,158 @@
+---
+layout: post
+title: 'WebGL编程指南读书笔记(二)-颜色与纹理'
+subtitle: 'WebGL'
+date: 2020-08-03 19:53:00
+author: 'wuqiuyu'
+header-img: 'img/in-post/webgl.jpeg'
+header-mask: 0.3
+catalog: true
+tags:
+  - WebGL
+  - 计算机图像学
+---
+
+> 这个系列是学习WebGL编程指南的第二篇，主要记录5章的读书笔记<br/>
+
+#  颜色与纹理
+
+ ### 几何形状的装配和光栅化
+ 在绘制一个红色三角形的时候，webGL先将顶点坐标写入缓冲区对象，然后将缓冲区对象分配给a_position变量，最后调用gl.drawArrays()执行顶点着色器。当顶点着色器执行时，缓冲区中的三个顶点坐标一次传给了a_position变量，再赋值给gl_position，这样WebGL系统就可以根据顶点坐标进行绘制。在片元着色器中，将红色的ERGBA值(1.0, 0.0, 0.0, 1.0)赋给gl_FragColor，这样就画出了一个红色三角形。那么在给出三个顶点坐标的时候，片元着色器时如何进行逐片元操作的呢？<br/>
+
+![图片](/img/in-post/webgl1-1.png)
+实际上，在顶点着色器和片元着色器之间，有这样两个步骤：
+- 图形装配过程：这一步的任务是，将孤立的顶点坐标装配成为几何图形。几何图形的类别有gl.drawArrarys()函数的一个参数决定。
+- 光栅化过程：这一步的任务是，将装配好的几何图形转换为片元
+
+![图片](/img/in-post/webgl1-2.png)
+gl_position实际上是几何图形装配阶段的输入数据。几何图形装配过程又被称为图元装配的过程，因为被装配出的基本图形（点、线、面）有被称为图元。
+顶点着色器和片元着色器之间图形装配与光栅化的过程如下：
+1. 根据 gl.drawArrays()的参数n，将执行顶点着色器n次（执行顶点着色器结果：将坐标传入并存储在装配区）
+2. 开始装配图形。使用传入的点坐标，根据 gl.drawArrays()的第一个参数信息（如：gl.TRANGLES）来决定如何装配。
+3. 光栅化，图形转换为片元的过程称为光栅化。
+![图片](/img/in-post/webgl1-3.png)
+光栅化完成后，会逐片元调用片元着色器，计算出该片元的颜色，并写入颜色缓冲区，一直到最后一个片元着色器被调用，浏览器就会显示出最后结果。
+### 颜色值的内插
+一个两个端点颜色不同的线段，中间的颜色，是WebGL通过自动计算出的颜色，这个过程叫做颜色的内插。
+
+![图片](/img/in-post/webgl1-4.png)
+### 纹理映射
+纹理映射的作用，就是更具纹理图像，为之前光栅化后的灭一个片元涂上合适的颜色，组成纹理图像的像素有 被称为纹理。每一个纹理的颜色都使用RGB或者RGBA格式编码。
+#### 纹理坐标
+纹理坐标是二维的，WebGL中用s和t命名纹理坐标（st坐标系统）；
+![图片](/img/in-post/webgl1-5.png)
+
+在WebGL中，要进行纹理映射，需遵循以下四步：
+1. 准备好映射到几何图形上的纹理图像。
+2. 为几何图形配置纹理映射方式。
+3. 加载纹理图像，对其进行一些配置，以在WebGL中使用它。
+4. 在片元着色器中将相应的纹素从纹理中抽取出来，并将纹素的颜色赋给片元。
+
+纹理映射过程详解
+步骤：
+1. 顶点着色器中接收定点的纹理坐标，光栅化后传递给片元着色器。
+2. 片元着色器根据片元的纹理坐标，从纹理图像中抽取出纹素颜色，赋给当前片元。
+3. 设置顶点的纹理坐标（initVertexBuffers()）
+```javascript
+var verticesTexCoords = new Float32Array([
+  -0.5,  0.5,   0.0, 1.0,
+  -0.5, -0.5,   0.0, 0.0,
+   0.5,  0.5,   1.0, 1.0,
+   0.5, -0.5,   1.0, 0.0,    
+]) 
+```
+将顶点坐标和纹理坐标写入缓冲区对象，将其中的顶点坐标分配给a_Position变量并开启之。
+```javascript
+var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, FSIZE * 4, 0);
+gl.enableVertexAttribArray(a_Position);
+```
+获取a_TexCoord变量的存储位置，将缓冲区中的纹理坐标分配给该变量更开启。
+```javascript
+var a_TexCoord = gl.getAttribLocation(gl.program, 'a_TexCoord');
+gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 4, FSIZE * 2);
+gl.enableVertexAttribArray(a_TexCoord);
+```
+4. 准备待加载的纹理图像，令浏览器读取它（initTextures()）
+initTextures() => 配置和加载问题
+调用gl.createTexture()创建纹理对象
+```javascript
+
+var texture = gl.createTexture();
+```
+调用gl.getUniformLocation()从片元着色器中获取uniform变量u_Sampler（取样器）的存储位置，该变量用来接收纹理图像
+```javascript
+var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+```
+创建image对象
+```javascript
+var image = new Image();
+```
+注册图像加载事件的响应函数
+```javascript
+image.onload = function(){ loadTexture(gl, n, texture, u_Sampler, image); };
+```
+浏览器开始加载图像
+
+```javascript
+image.src = '../resources/sky.jpg';
+```
+5. 监听纹理图像的加载事件，一旦加载完成，就在WebGL系统中使用纹理（loadTexture()）。
+
+loadTexture() => 配置纹理供WebGL使用
+
+对纹理图像进行y轴翻转（WebGL纹理坐标中的t轴的方向和PNG、BMP、JPG等格式图片的坐标系统的Y轴方向是相反的。）
+注册图像加载事件的响应函数
+```javascript
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+```
+![图片](/img/in-post/webgl1-6.png)
+### 激活单元纹理
+
+WebGL 通过一种称为纹理单元（texture unit）的机制来同时可以使用多个纹理。每个纹理单元有一个单元编号来管理一张纹理图像。即使程序只需要一张纹理图像，也需要为其指定一个纹理单元。系统支持的纹理单元个数取决于硬件和刘看齐的WebGL实现，但是默认的情况一下WebGL至少支持8个纹理单元。内置的变量gl.TEXTURE0， gl.TEXTURE1，gl.TEXTURE2。。。。gl.TEXTURE7各表示一个纹理单元。
+![图片](/img/in-post/webgl1-7.png)
+
+调用gl.activeTexture来激活纹理单元
+```javascript
+gl.activeTexture(gl.TEXTURE0);
+```
+![图片](/img/in-post/webgl1-8.png)
+绑定纹理对象（gl.bindTexture）
+![图片](/img/in-post/webgl1-9.png)
+![图片](/img/in-post/webgl1-10.png)
+配置纹理对象参数（gl.texParameteri(target, pname, param)）
+![图片](/img/in-post/webgl1-11.png)
+
+配置纹理对象的参数 => 设置纹理图像映射到图形上的具体方式
+```javascript
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+```
+![图片](/img/in-post/webgl1-12.png)
+![图片](/img/in-post/webgl1-13.png)
+
+将纹理对象赋值给2D图形。
+配置纹理图像 => 将纹理图像分配给纹理对象，同时允许你告诉WebGL系统关于该图像的一些特性。
+
+```javascript
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+
+```
+![图片](/img/in-post/webgl1-15.png)
+
+format参数表示纹理数据的格式；
+![图片](/img/in-post/webgl1-14.png)
+format标示纹理数据的格式，必须根据纹理图像的格式来选择这个参数
+- JPG => gl.RGB
+- PNG => gl.RGBA
+- BMP => gl.RGB <br/>
+gl.LUMUNANCE 和 gl.LUMINANCE_ALPHA 通常用在灰度图像上等等<br/>
+
+流明表示我们感知到的物体表面的亮度。通常使用物体表面的红、绿、蓝颜色分量值的甲醛平均来计算流明。<br/>
+internalformat参数告诉系统纹理图片的格式类型，在WebGL中，internalformat必须和format一样。type参数指定了纹理的类型
+![图片](/img/in-post/webgl1-16.png)
+将纹理参数传递给片元着色器（gl.uniform1i()）<br/>
+
+![图片](/img/in-post/webgl1-17.png)
+
+在片元着色器中获取纹理图像（texture2D）
+![图片](/img/in-post/webgl1-18.png)
