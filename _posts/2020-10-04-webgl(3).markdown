@@ -42,7 +42,7 @@ tags:
 ![图片](/img/in-post/webgl3-4.png)
 通过Natrix4.setPerspective()方法定义盒装可视空间。
 ![图片](/img/in-post/webgl3-5.png)
-
+![图片](/img/in-post/webgl3-9.png)
 ### 隐藏面消除
 隐藏面消除功能可以消除那些被遮挡的表面，开启隐藏面消除功能的方式：
 1. 开启隐藏面消除功能。
