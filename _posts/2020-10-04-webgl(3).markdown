@@ -1,0 +1,66 @@
+---
+layout: post
+title: 'WebGL编程指南读书笔记(四)-三维图形'
+subtitle: 'WebGL'
+date: 2020-10-04 20:36:29
+author: 'wuqiuyu'
+header-img: 'img/in-post/webgl.jpeg'
+header-mask: 0.3
+catalog: true
+tags:
+  - WebGL
+  - 计算机图像学
+---
+
+> 这个系列是学习WebGL编程指南的第四篇，主要记录7章的读书笔记<br/>
+
+
+# 三维图形
+在WebGL中立方体是由三角形组成的，三维物体和二维物体的的一个区别是，在绘制的时候不仅要考虑顶点的x和y坐标，还要考虑他们的深度信息（depth information）。
+### 视点、观察目标点和上方向
+- 视点： 观察者的位置
+- 观察目标点：被观察目标所在的点，它可以用来确定视线.
+- 上方向：最终绘制在屏幕上的影像中的向上的方向，
+用上面三个矢量可以创建一个视图矩阵。使用Matrix4.setLookAt()函数可以根据上面三个矢量创建视图矩阵。
+
+![图片](/img/in-post/webgl3-1.png)
+
+### 可视范围（正射类型）
+只有在可视范围内的三维物体WebGL才会绘制。水平视角，垂直视角和可视深度，定义了可视范围（view volume）<br/>
+有两类可视空间：
+1. 长方体可视空间，也称盒状空间，由正射投影（orthographic projection）产生。
+2. 四棱锥/金字塔可视空间，由透视投影(perspective projection)产生。
+
+盒装可视空间由前后两个矩形表面确定，分别称为近裁剪面（near clipping plane）和远裁剪面（far clipping plane）.
+![图片](/img/in-post/webgl3-2.png)
+通过Natrix4.setOrtho()方法定义盒装可视空间。
+
+![图片](/img/in-post/webgl3-3.png)
+
+### 可视范围（透视投影）
+
+![图片](/img/in-post/webgl3-4.png)
+通过Natrix4.setPerspective()方法定义盒装可视空间。
+![图片](/img/in-post/webgl3-5.png)
+
+### 隐藏面消除
+隐藏面消除功能可以消除那些被遮挡的表面，开启隐藏面消除功能的方式：
+1. 开启隐藏面消除功能。
+```javascript
+gl.enable(gl.DEPTH_TEST)
+```
+![图片](/img/in-post/webgl3-6.png)
+2. 在绘制之前，清除深度缓冲区
+深度缓冲区是一个中间对象，其作用就是帮助WebGL进行隐藏面消除
+```javascript
+gl.clear(gl.DEPTH_BUFFER_BIT);
+```
+![图片](/img/in-post/webgl3-7.png)
+### 深度冲突
+当几何图形或物体的两个表面极为接近，会出现斑斑驳驳的现象，这种表现为深度冲突（Z fighting）。
+深度冲突产生的原因：两个表面过于接近，深度缓冲区精度有限，不能区分哪个在前，哪个在后。才用多变形偏移（polygon offset）机制来解决这个问题。该机制自动在Z值加上一个偏移量，偏移量的值由物体表面相对于观察者的角度来决定。启用多边形偏移机制的方法：
+1. 开启多变形偏移
+```javascript
+gl.enable(gl.POLYGON_OFFSET_FILL)
+```
+![图片](/img/in-post/webgl3-8.png)
